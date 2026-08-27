@@ -1,0 +1,155 @@
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif); background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%); color: var(--text-primary); min-height: 100vh; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.hero { padding: 80px 0; text-align: center; background: linear-gradient(to bottom, rgba(0,153,255,0.05) 0%, transparent 100%); border-bottom: 1px solid rgba(0,153,255,0.1); }
+.hero h1 { font-size: 56px; font-weight: 700; line-height: 1.2; margin-bottom: 20px; color: #fff; }
+.hero h1 span { color: #00bfff; display: block; margin-top: 10px; }
+.hero .tagline { font-size: 18px; color: rgba(255,255,255,0.8); margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+.hero .cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.btn { padding: 14px 32px; font-size: 16px; font-weight: 500; border-radius: 8px; border: 2px solid; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
+.btn-primary { background: #00bfff; color: #0f0f1a; border-color: #00bfff; }
+.btn-primary:hover { background: #00a0ff; border-color: #00a0ff; transform: translateY(-2px); }
+.btn-secondary { background: transparent; color: #00bfff; border-color: #00bfff; }
+.btn-secondary:hover { background: rgba(0,191,255,0.1); }
+.subheading { color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-top: 60px; margin-bottom: 40px; }
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 60px; }
+.feature-card { background: rgba(0,153,255,0.08); border: 1px solid rgba(0,191,255,0.2); border-radius: 12px; padding: 32px; text-align: center; transition: all 0.3s ease; }
+.feature-card:hover { background: rgba(0,153,255,0.12); border-color: rgba(0,191,255,0.4); transform: translateY(-4px); }
+.feature-card .icon { font-size: 32px; color: #00bfff; margin-bottom: 16px; display: block; }
+.feature-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #fff; }
+.feature-card p { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+.how-it-works { padding: 80px 0; background: rgba(0,0,0,0.3); }
+.how-it-works h2 { font-size: 36px; font-weight: 700; text-align: center; margin-bottom: 60px; color: #fff; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; margin-top: 40px; }
+.step { counter-increment: step-counter; position: relative; }
+.step-number { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #00bfff; color: #0f0f1a; font-weight: 700; font-size: 20px; border-radius: 50%; margin-bottom: 16px; }
+.step h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #fff; }
+.step p { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+.benefits { padding: 80px 0; }
+.benefits h2 { font-size: 36px; font-weight: 700; text-align: center; margin-bottom: 60px; color: #fff; }
+.benefit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.benefit-item { padding: 24px; background: rgba(255,255,255,0.05); border-left: 4px solid #00bfff; border-radius: 4px; }
+.benefit-item h3 { font-size: 16px; font-weight: 600; color: #00bfff; margin-bottom: 12px; }
+.benefit-item p { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.6; }
+.cta-section { padding: 80px 0; text-align: center; background: linear-gradient(to bottom, rgba(0,191,255,0.1) 0%, transparent 100%); border-top: 1px solid rgba(0,191,255,0.1); }
+.cta-section h2 { font-size: 36px; font-weight: 700; margin-bottom: 20px; color: #fff; }
+.cta-section p { font-size: 18px; color: rgba(255,255,255,0.8); margin-bottom: 40px; }
+.footer { padding: 40px 0; border-top: 1px solid rgba(0,191,255,0.1); text-align: center; color: rgba(255,255,255,0.5); font-size: 14px; }
+.badge { display: inline-block; background: rgba(0,191,255,0.2); color: #00bfff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+@media (max-width: 768px) {
+  .hero { padding: 60px 0; }
+  .hero h1 { font-size: 36px; }
+  .hero .tagline { font-size: 16px; }
+  .features { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .benefit-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="hero">
+  <div class="container">
+    <div class="badge">Live Marathon Operations</div>
+    <h1>See It. Control It.<span>Own It.</span></h1>
+    <p class="tagline">Stop managing by phone calls. Real-time infrastructure tracking built for race ops teams who demand visibility. Your team reports live. Clients see the truth. No more guessing what's happening on the ground.</p>
+    <div class="cta-group">
+      <button class="btn btn-primary">Get Started</button>
+      <button class="btn btn-secondary">See a Demo</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="subheading">Core Capabilities</div>
+  <div class="features">
+    <div class="feature-card">
+      <i class="ti ti-bolt" style="color: #00bfff; font-size: 32px;" aria-hidden></i>
+      <h3>LIVE Infrastructure</h3>
+      <p>Real-time updates from every checkpoint. Track status as it happens. No delays. No radio silence.</p>
+    </div>
+    <div class="feature-card">
+      <i class="ti ti-shield-check" style="color: #00bfff; font-size: 32px;" aria-hidden></i>
+      <h3>PROOF Verification</h3>
+      <p>Photo-based evidence. Your team captures proof. Clients see it. Full transparency, every step.</p>
+    </div>
+    <div class="feature-card">
+      <i class="ti ti-eye" style="color: #00bfff; font-size: 32px;" aria-hidden></i>
+      <h3>ONE VIEW Control</h3>
+      <p>Clients, admins, and ops unified. One dashboard. Complete visibility. Everyone knows what's real.</p>
+    </div>
+  </div>
+</div>
+
+<div class="how-it-works">
+  <div class="container">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Team Updates Live</h3>
+        <p>Your field team submits status updates from the race course. One tap. Current conditions. Real time.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Proof Attached</h3>
+        <p>Photo verification attached to every update. Clients see evidence, not just claims.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Dashboard Live</h3>
+        <p>Everything flows to your ops dashboard. Clients see their race. Admins see the whole picture. You control what's visible.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <h3>Crisis Fast-Track</h3>
+        <p>When something goes wrong, escalate in seconds. Alert the right people. Respond before it spreads.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="benefits">
+  <div class="container">
+    <h2>Built for Your Role</h2>
+    <div class="benefit-grid">
+      <div class="benefit-item">
+        <h3>For Clients</h3>
+        <p>See your race unfold in real time. Live race status, infrastructure health, and team positioning. Confidence built on visibility.</p>
+      </div>
+      <div class="benefit-item">
+        <h3>For Team Leads</h3>
+        <p>Coordinate across zones without one-on-one calls. See every checkpoint at a glance. Respond to issues instantly.</p>
+      </div>
+      <div class="benefit-item">
+        <h3>For Ops Heads</h3>
+        <p>Control what clients see. Manage 20,000+ participants with one dashboard. Crisis response in seconds, not minutes.</p>
+      </div>
+      <div class="benefit-item">
+        <h3>For Your Bottom Line</h3>
+        <p>Fewer call drops. Fewer delays. Fewer complaints. Faster incident response. Better event reputation.</p>
+      </div>
+      <div class="benefit-item">
+        <h3>Scalable to Any Size</h3>
+        <p>Works for 500 participants or 50,000. Growing events don't need a new system. Just more users on the same platform.</p>
+      </div>
+      <div class="benefit-item">
+        <h3>Built in India, for India</h3>
+        <p>Designed for marathon ops in Indian cities. Built on infrastructure you trust. Owned by people who understand your challenges.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-section">
+  <div class="container">
+    <h2>Ready to Take Control?</h2>
+    <p>Move from chaos calls to live ops. See your next race clearly.</p>
+    <button class="btn btn-primary">Start Your Free Trial</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="footer">
+    <p>&copy; 2026 NileMile Operations. Built for race teams who own their events.</p>
+  </div>
+</div>
