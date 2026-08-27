@@ -1,16 +1,28 @@
-# Marathon LiveOps Command Center — V3 Premium Dark
+# Marathon LiveOps — Fresh GitHub Build
 
-V3 upgrades:
-- Premium dark marathon/event-agency visual system.
-- Live infrastructure / marathon operations hero imagery.
-- Stronger Client Dashboard presentation.
-- Live infrastructure proof carousel.
-- Premium Admin quick actions.
-- Create Event + race-wise switching retained.
-- Faster dropdown-first Operations Portal retained.
-- Mobile camera capture retained.
-- Event-wise PPT export retained.
-- Premium footer and company branding area.
+This is the consolidated GitHub Pages version.
 
-Important prototype note:
-This is still a front-end prototype using browser localStorage. Multi-user real-time updates across different phones require a shared backend/database and role-based authentication.
+Implemented:
+- Updated THE NILE MILE logo artwork in header.
+- No affiliation line below the logo.
+- Marathon LiveOps positioned only as "Operations Technology Service".
+- Premium SVG home icon.
+- Sunrise marathon operations hero.
+- Contact details updated:
+  Park Centre, 8th Floor, Celica Park 24, Park Street, Kolkata – 700016.
+  +91 95237 60856
+  Rajeshkumar9523rama@gmail.com
+- Client Login / Admin access / Ops Update.
+- Event creation and duplication.
+- Race-wise event switching.
+- Event basics / project settings.
+- Master dropdown configuration.
+- Task control and client visibility.
+- Dropdown-first Ops Update portal.
+- Mobile camera proof upload.
+- Client readiness dashboard.
+- PPT export.
+- GitHub Pages compatible relative paths and .nojekyll.
+
+Important:
+This version still stores project state in browser localStorage. A shared real-time backend and secure authentication are the next production step.
