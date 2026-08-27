@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marathon LiveOps — Operations Technology Service</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="publicSite">
+<header class="header">
+  <a href="#home" class="brand"><img src="assets/the-nile-mile-logo.png" alt="THE NILE MILE"></a>
+  <button id="menuBtn" class="menu-btn">☰</button>
+  <nav id="nav">
+    <a href="#home" class="home-icon" title="Home" aria-label="Home">
+      <svg viewBox="0 0 24 24"><path d="M3.7 10.3 12 3.7l8.3 6.6v8.4a1.5 1.5 0 0 1-1.5 1.5h-4.5v-5.5H9.7v5.5H5.2a1.5 1.5 0 0 1-1.5-1.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="#about">About Us</a>
+    <button data-access="client">Client Login</button>
+    <button data-access="ops">Ops Update</button>
+    <a href="#contact" class="contact-pill">Contact Us</a>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <div class="overlay"></div>
+  <div class="hero-copy">
+    <span class="kicker">MARATHON LIVEOPS</span>
+    <h1>Operations.<br>Technology.<br><span>Real Time.</span></h1>
+    <p>Live execution visibility, photo proof and project control for marathon operations.</p>
+    <div class="pills"><span>Live Infrastructure</span><span>Photo Verification</span><span>Client Visibility</span></div>
+    <div class="hero-actions"><button class="btn primary" data-access="client">Client Login</button><button class="btn ghost" data-access="ops">Ops Update</button></div>
+  </div>
+  <div class="service-tag"><strong>Operations Technology Service</strong><span>Venue • Expo • Race Course • Logistics • Medical • Security</span></div>
+</section>
+
+<section class="section dark" id="about">
+  <span class="kicker">ABOUT MARATHON LIVEOPS</span>
+  <h2>Built for the operational side of marathon execution.</h2>
+  <p class="lead">Marathon LiveOps is an operations technology service focused on live execution, proof, visibility and project control for marathon projects.</p>
+  <div class="feature-grid">
+    <article><b>01</b><h3>Client Visibility</h3><p>Curated readiness, milestones, proof and reports.</p></article>
+    <article><b>02</b><h3>Admin Control</h3><p>Create projects, departments, teams, tasks, zones and deadlines.</p></article>
+    <article><b>03</b><h3>Fast Field Updates</h3><p>Tap-first mobile updates with camera proof for ground teams.</p></article>
+  </div>
+</section>
+
+<section class="section contact" id="contact">
+  <div>
+    <h2>Get in touch.</h2>
+    <p>For marathon operations, live project tracking, event support or access to your project dashboard.</p>
+    <div class="contact-list">
+      <div class="contact-item"><span>⌖</span><div><small>Address</small><strong>Park Centre, 8th Floor, Celica Park 24,<br>Park Street, Kolkata – 700016.</strong></div></div>
+      <div class="contact-item"><span>☎</span><div><small>Phone</small><strong><a href="tel:+919523760856">+91 95237 60856</a></strong></div></div>
+      <div class="contact-item"><span>✉</span><div><small>Email</small><strong><a href="mailto:Rajeshkumar9523rama@gmail.com">Rajeshkumar9523rama@gmail.com</a></strong></div></div>
+    </div>
+  </div>
+  <form id="contactForm" class="contact-form">
+    <h3>Send us a message</h3>
+    <div class="two"><label>Name<input required></label><label>Phone<input required></label></div>
+    <label>Email<input type="email" required></label>
+    <label>Message<textarea rows="5" required></textarea></label>
+    <button class="btn primary" type="submit">Submit Message</button>
+    <div id="contactSuccess" class="success">Thank you. Your enquiry has been recorded.</div>
+  </form>
+</section>
+
+<footer><div><strong>MARATHON LIVEOPS</strong><span>Operations Technology Service</span></div><div>© 2026 Utsara Sports Pvt Ltd. All rights reserved.</div></footer>
+</div>
+
+<div id="app" class="app hidden">
+  <aside>
+    <img src="assets/the-nile-mile-logo.png" alt="THE NILE MILE" class="side-logo">
+    <div class="product-name">Marathon LiveOps</div>
+    <label class="event-switch"><small>ACTIVE EVENT</small><select id="eventSwitcher"></select></label>
+    <nav class="side-nav">
+      <button class="side-btn active" data-view="client">Client View</button>
+      <button class="side-btn" data-view="admin">Admin Dashboard</button>
+      <button class="side-btn" data-view="ops">Ops Update</button>
+    </nav>
+    <span class="side-note">Operations Technology Service</span>
+  </aside>
+
+  <main class="workspace">
+    <header class="app-header">
+      <div><span class="kicker">MARATHON LIVEOPS</span><h1 id="viewTitle">Client Progress Dashboard</h1></div>
+      <div class="app-actions"><span>● Live</span><button id="homeBtn" class="btn ghost small">Home</button><button id="pptBtn" class="btn primary small">Download PPT</button></div>
+    </header>
+
+    <section id="clientView" class="view active">
+      <div class="client-banner"><div><span class="kicker">CLIENT PROJECT VIEW</span><h2 id="clientProject"></h2><p id="clientMeta"></p></div><div class="ready"><strong id="readyPct">0%</strong><span>Overall Readiness</span></div></div>
+      <div id="clientStats" class="stats"></div>
+      <div class="grid two">
+        <div class="panel"><h3>Department Readiness</h3><div id="deptProgress"></div></div>
+        <div class="panel"><h3>Latest Verified Proof</h3><div id="clientProofs" class="proofs"></div></div>
+      </div>
+      <div class="grid two">
+        <div class="panel"><h3>Delivered Milestones</h3><div id="milestones" class="list"></div></div>
+        <div class="panel"><h3>Executive Summary</h3><div id="summary" class="summary"></div><p class="note">Only client-approved tasks are visible.</p></div>
+      </div>
+    </section>
+
+    <section id="adminView" class="view">
+      <div class="admin-banner"><div><span class="kicker">PROJECT CONTROL</span><h2>Admin Command Center</h2><p>Create race-wise projects and manage the complete operational status.</p></div><div><button id="duplicateEvent" class="btn ghost">Duplicate Event</button><button id="createEvent" class="btn primary">+ Create Event</button></div></div>
+      <div id="adminStats" class="stats"></div>
+
+      <div class="tabs"><button class="tab active" data-pane="tasks">Tasks</button><button class="tab" data-pane="setup">Event Setup</button><button class="tab" data-pane="masters">Master Dropdowns</button><button class="tab" data-pane="activity">Activity & Issues</button></div>
+
+      <div id="tasksPane" class="pane active">
+        <div class="panel"><div class="panel-head"><h3>Task Control Board</h3><button id="addTask" class="btn primary small">+ Add Task</button></div>
+          <div class="filters"><select id="deptFilter"></select><select id="statusFilter"><option value="all">All Status</option><option>Not Started</option><option>Working</option><option>Verification</option><option>Completed</option><option>Delayed</option><option>Critical</option></select></div>
+          <div class="table-wrap"><table><thead><tr><th>Task</th><th>Department</th><th>Zone</th><th>Status</th><th>%</th><th>Owner</th><th>Proof</th><th>Client</th></tr></thead><tbody id="taskTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <div id="setupPane" class="pane">
+        <div class="grid two">
+          <div class="panel"><h3>Event Basics</h3><form id="settingsForm" class="form-grid">
+            <label>Event Name<input id="setProject" required></label><label>Client Name<input id="setClient" required></label>
+            <label>City / Venue<input id="setCity" required></label><label>Race Date<input id="setDate" type="date" required></label>
+            <label>Expo Start<input id="setExpoStart" type="date"></label><label>Expo End<input id="setExpoEnd" type="date"></label>
+            <label>Expected Participants<input id="setParticipants" type="number"></label><label>Project Lead<input id="setLead"></label>
+            <label class="full">Race Categories<input id="setCategories"></label><button class="btn primary full" type="submit">Save Event Settings</button>
+          </form></div>
+          <div class="panel"><h3>Attention Required</h3><div id="issueList" class="list"></div></div>
+        </div>
+      </div>
+
+      <div id="mastersPane" class="pane">
+        <div class="panel"><h3>Master Dropdown Data</h3><p class="muted">These values automatically populate the Ops Update form.</p>
+        <form id="masterForm" class="master-grid">
+          <label>Team Members<textarea id="masterTeam" rows="7"></textarea><small>Name | Mobile | Designation</small></label>
+          <label>Departments<textarea id="masterDepartments" rows="7"></textarea></label>
+          <label>Designations<textarea id="masterDesignations" rows="7"></textarea></label>
+          <label>Zones / Locations<textarea id="masterZones" rows="7"></textarea></label>
+          <label>Issue Types<textarea id="masterIssues" rows="7"></textarea></label>
+          <label>ETA Options<textarea id="masterEta" rows="7"></textarea></label>
+          <button class="btn primary full" type="submit">Save Dropdown Masters</button>
+        </form></div>
+      </div>
+
+      <div id="activityPane" class="pane"><div class="grid two"><div class="panel"><h3>Live Update Feed</h3><div id="activityFeed"></div></div><div class="panel"><h3>Critical & Delayed</h3><div id="criticalList" class="list"></div></div></div></div>
+    </section>
+
+    <section id="opsView" class="view">
+      <div class="ops-grid">
+        <div class="ops-intro"><span class="kicker">FIELD OPERATIONS</span><h2>Update in under 30 seconds.</h2><p>Tap, select, take proof and submit.</p><div class="steps"><span>1 Select</span><span>2 Update</span><span>3 Photo</span><span>4 Submit</span></div></div>
+        <div class="panel"><form id="opsForm" class="form-grid">
+          <label>Name<select id="opsName" required></select></label><label>Mobile<select id="opsMobile" required></select></label>
+          <label>Designation<select id="opsDesignation" required></select></label><label>Department<select id="opsDepartment" required></select></label>
+          <label class="full">Assigned Task<select id="opsTask" required></select></label>
+          <label>Zone<select id="opsZone" required></select></label><label>Status<select id="opsStatus"><option>Working</option><option>Verification</option><option>Completed</option><option>Delayed</option><option>Critical</option><option>Not Started</option></select></label>
+          <label>Progress<select id="opsProgress"><option value="0">0%</option><option value="10">10%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="90">90%</option><option value="100">100%</option></select></label>
+          <label>Issue<select id="opsIssue"></select></label><label>ETA<select id="opsEta"></select></label>
+          <label>Verification<select id="opsVerified"><option value="yes">Yes — physically checked</option><option value="no">No — remote update</option></select></label>
+          <label>Remark<select id="opsRemark"><option value="">No remark</option><option>Work going as planned</option><option>Final finishing underway</option><option>Ready for verification</option><option>Completed and site cleared</option><option>Waiting for material</option><option>Waiting for manpower</option><option>Escalation required</option></select></label>
+          <label class="upload full"><input id="opsPhoto" type="file" accept="image/*" capture="environment"><div id="uploadText"><strong>📷 Take Live Photo / Upload Proof</strong><span>Rear camera opens where supported</span></div><img id="preview"></label>
+          <button class="btn primary full" type="submit">Submit Live Update</button>
+        </form><div id="opsSuccess" class="success">✓ Update submitted successfully.</div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="accessModal" class="modal"><div class="modal-card"><div class="modal-head"><h3>Access Marathon LiveOps</h3><button data-close="accessModal">×</button></div><div id="accessChoices"></div><p class="muted">Prototype access only. Secure login comes with the production backend.</p></div></div>
+<div id="eventModal" class="modal"><div class="modal-card"><div class="modal-head"><h3>Create Event</h3><button data-close="eventModal">×</button></div><form id="eventForm" class="form-grid"><label class="full">Event Name<input id="eventName" required></label><label>Client<input id="eventClient" required></label><label>City<input id="eventCity" required></label><label>Race Date<input id="eventDate" type="date" required></label><label>Project Lead<input id="eventLead"></label><label>Participants<input id="eventParticipants" type="number"></label><button class="btn primary full" type="submit">Create Event</button></form></div></div>
+<div id="taskModal" class="modal"><div class="modal-card"><div class="modal-head"><h3>Add Task</h3><button data-close="taskModal">×</button></div><form id="taskForm" class="form-grid"><label>Task ID<input id="taskId" required></label><label>Department<input id="taskDept" required></label><label class="full">Task Name<input id="taskName" required></label><label>Zone<input id="taskZone" required></label><label>Owner<input id="taskOwner"></label><label>Status<select id="taskStatus"><option>Not Started</option><option>Working</option><option>Verification</option><option>Completed</option><option>Delayed</option><option>Critical</option></select></label><label>Progress<input id="taskProgress" type="number" min="0" max="100" value="0"></label><label class="check full"><input id="taskClient" type="checkbox" checked> Visible to client</label><button class="btn primary full" type="submit">Add Task</button></form></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
