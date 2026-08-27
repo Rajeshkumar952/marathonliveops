@@ -1,0 +1,25 @@
+MARATHON LIVEOPS V3 — BUTTON FIX
+
+Cause fixed:
+The premium V3 HTML no longer contained the old #clientNameHero, #projectNameHero,
+#projectMetaHero, #overallPct and #overallRing elements, but app.js attempted to
+write to them at startup. That stopped JavaScript execution before event handlers
+were attached.
+
+Fixed/checked:
+- Client/Admin/Ops navigation
+- Hero Admin/Operations buttons
+- Create Event modal
+- Quick Create Event
+- Add Task modal
+- Quick Add Task
+- Active Event switcher
+- Project Settings save
+- Operations dropdowns
+- Photo preview
+- Submit Live Update
+- Client visibility toggle
+- PPT button startup dependency remains CDN-based
+
+DEPLOY:
+Unzip this package and deploy the CONTENTS so index.html is at the Netlify site root.

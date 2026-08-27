@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marathon LiveOps Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="premium-dark">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">V</div>
+        <div>
+          <div class="brand-name" id="companyNameSidebar">Vyaksha International Pvt Ltd</div>
+          <div class="brand-sub">LiveOps Command Center</div>
+        </div>
+      </div>
+
+      <div class="project-chip">
+        <span class="dot live"></span>
+        <div class="project-switcher">
+          <small>ACTIVE EVENT</small>
+          <select id="eventSwitcher" aria-label="Switch active event"></select>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-btn active" data-view="client"><span>◉</span> Client View</button>
+        <button class="nav-btn" data-view="admin"><span>⌘</span> Admin Dashboard</button>
+        <button class="nav-btn" data-view="ops"><span>⇧</span> Operations Update</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="mini-note">
+          <strong>One source of truth</strong>
+          <span>Status + proof + verification + reporting</span>
+        </div>
+        <div class="legal">All rights reserved <span id="companyNameFooter">Vyaksha International Pvt Ltd</span></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow" id="eventEyebrow">LIVE PROJECT STATUS</div>
+          <h1 id="topTitle">Client Progress Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <div class="last-sync"><span class="pulse"></span> Live • Updated <span id="lastUpdated">just now</span></div>
+          <button class="btn secondary" id="exportPptBtn">Download PPT</button>
+        </div>
+      </header>
+
+      <!-- CLIENT VIEW -->
+      <section class="view active" id="clientView">
+        <section class="premium-hero">
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <div class="hero-badge"><span class="dot live"></span> MARATHON LIVEOPS COMMAND CENTER</div>
+            <h2>Live. Track. <span>Deliver.</span></h2>
+            <p>Real-time execution visibility for every marathon project.</p>
+            <div class="hero-points">
+              <span>◫ Real-time Updates</span>
+              <span>◇ Complete Visibility</span>
+              <span>↗ Better Execution</span>
+            </div>
+            <div class="hero-actions">
+              <button class="btn neon" data-jump="client">Client Dashboard</button>
+              <button class="btn ghost" data-jump="admin">Admin Login</button>
+              <button class="btn ghost" data-jump="ops">Operations Login</button>
+            </div>
+          </div>
+          <div class="hero-status">
+            <small>LIVE PROJECT</small>
+            <strong id="heroProjectName">City Marathon 2026</strong>
+            <div class="hero-ready"><span id="heroReadyPct">67%</span><em>Overall readiness</em></div>
+          </div>
+        </section>
+
+        <div class="client-info-strip">
+          <div><span>Event Date</span><strong id="clientEventDate">—</strong></div>
+          <div><span>Event City</span><strong id="clientEventCity">—</strong></div>
+          <div><span>Project Lead</span><strong id="clientProjectLead">—</strong></div>
+          <div><span>Client</span><strong id="clientInfoName">—</strong></div>
+        </div>
+
+        <div class="live-proof-strip">
+          <div class="proof-banner">
+            <div>
+              <span class="eyebrow">LIVE INFRASTRUCTURE PROOF</span>
+              <h3>Ground execution, documented live.</h3>
+            </div>
+            <span class="proof-count" id="liveProofCount">0 proofs</span>
+          </div>
+          <div class="proof-carousel" id="proofCarousel"></div>
+        </div>
+
+        <div class="metrics" id="clientMetrics"></div>
+
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <span class="eyebrow">PROJECT PROGRESS</span>
+                <h3>Phase-wise Readiness</h3>
+              </div>
+              <span class="status-pill good">On Track</span>
+            </div>
+            <div id="phaseProgress" class="progress-list"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <span class="eyebrow">LATEST VERIFIED WORK</span>
+                <h3>Recent Site Proof</h3>
+              </div>
+              <button class="link-btn" id="showGalleryBtn">View all</button>
+            </div>
+            <div class="proof-grid" id="proofGrid"></div>
+          </div>
+        </div>
+
+        <div class="grid three client-health-grid">
+          <div class="card compact-card">
+            <span class="eyebrow">TODAY'S EXECUTION</span>
+            <h3>Site Activity</h3>
+            <div class="big-kpi" id="clientTodayUpdates">0</div>
+            <p class="muted-copy">Operational updates logged in the live command center.</p>
+          </div>
+          <div class="card compact-card">
+            <span class="eyebrow">VERIFICATION</span>
+            <h3>Proof Coverage</h3>
+            <div class="big-kpi" id="clientProofCoverage">0%</div>
+            <p class="muted-copy">Tracked activities with field proof available.</p>
+          </div>
+          <div class="card compact-card">
+            <span class="eyebrow">READINESS</span>
+            <h3>Client-visible Scope</h3>
+            <div class="big-kpi" id="clientVisibleCount">0</div>
+            <p class="muted-copy">Approved tasks currently visible on the client dashboard.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <span class="eyebrow">KEY MILESTONES</span>
+                <h3>What has been delivered</h3>
+              </div>
+            </div>
+            <div class="milestone-list" id="milestoneList"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <span class="eyebrow">CLIENT SUMMARY</span>
+                <h3>Current Project Position</h3>
+              </div>
+            </div>
+            <div class="summary-box" id="clientSummary"></div>
+            <div class="client-note">
+              <strong>Reporting principle</strong>
+              <p>Only client-approved and verified updates are displayed here. Internal operational escalations remain within the Admin Command Center.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADMIN -->
+      <section class="view" id="adminView">
+        <div class="admin-banner">
+          <div>
+            <span class="eyebrow">PROJECT CONTROL</span>
+            <h2>Admin Command Center</h2>
+            <p>Configure the race, monitor every department, verify proof, manage visibility and resolve critical blockers.</p>
+          </div>
+          <div class="admin-actions">
+            <button class="btn secondary inverse" id="createEventBtn">+ Create Event</button>
+            <button class="btn primary light" id="newTaskBtn">+ Add Task</button>
+          </div>
+        </div>
+
+        <div class="admin-quick-grid">
+          <button class="quick-card" id="quickCreateEvent"><span>＋</span><div><strong>Create Event</strong><small>Start a new race project</small></div></button>
+          <button class="quick-card" id="quickAddTask"><span>✓</span><div><strong>Add Task</strong><small>Create operational activity</small></div></button>
+          <button class="quick-card"><span>⚠</span><div><strong>Escalations</strong><small>Review critical blockers</small></div></button>
+          <button class="quick-card"><span>▣</span><div><strong>Client Visibility</strong><small>Control what client sees</small></div></button>
+        </div>
+        <div class="metrics" id="adminMetrics"></div>
+
+        <div class="grid admin-grid">
+          <div class="card span-2">
+            <div class="card-head">
+              <div>
+                <span class="eyebrow">LIVE OPERATIONS</span>
+                <h3>Task Control Board</h3>
+              </div>
+              <div class="filters">
+                <select id="adminDeptFilter"><option value="all">All departments</option></select>
+                <select id="adminStatusFilter">
+                  <option value="all">All status</option>
+                  <option>Completed</option><option>Working</option><option>Delayed</option><option>Critical</option><option>Not Started</option><option>Verification</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Task</th><th>Department</th><th>Location</th><th>Status</th><th>Progress</th><th>Owner</th><th>Proof</th><th>Client</th></tr></thead>
+                <tbody id="taskTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <span class="eyebrow">ATTENTION</span>
+                <h3>Critical & Delayed</h3>
+              </div>
+            </div>
+            <div id="criticalList" class="critical-list"></div>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <span class="eyebrow">RACE CUSTOMIZATION</span>
+                <h3>Project Settings</h3>
+              </div>
+            </div>
+            <form id="settingsForm" class="form-grid">
+              <label>Company Name<input id="settingCompany" /></label>
+              <label>Project / Race Name<input id="settingProject" /></label>
+              <label>Client Name<input id="settingClient" /></label>
+              <label>City / Venue<input id="settingCity" /></label>
+              <label>Race Date<input id="settingDate" type="date" /></label>
+              <label>Project Lead<input id="settingLead" /></label>
+              <button class="btn primary full" type="submit">Save Project Settings</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <span class="eyebrow">ACTIVITY</span>
+                <h3>Live Update Feed</h3>
+              </div>
+            </div>
+            <div id="activityFeed" class="activity-feed"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OPS -->
+      <section class="view" id="opsView">
+        <div class="ops-wrap">
+          <div class="ops-mobile-head">
+            <span>FIELD OPERATIONS</span>
+            <strong id="opsEventName">Active Event</strong>
+          </div>
+          <div class="ops-intro">
+            <span class="eyebrow">FIELD OPERATIONS</span>
+            <h2>Update your work in under 30 seconds.</h2>
+            <p>Select your task, update the status, attach proof and submit. The Project Head receives the update instantly.</p>
+            <div class="ops-steps">
+              <div><b>1</b><span>Select task</span></div>
+              <div><b>2</b><span>Update progress</span></div>
+              <div><b>3</b><span>Upload proof</span></div>
+              <div><b>4</b><span>Submit</span></div>
+            </div>
+          </div>
+
+          <div class="card ops-form-card">
+            <form id="opsForm" class="form-grid ops-fast-form">
+              <label>Team Member Name
+                <select id="opsName" required>
+                  <option value="">Select name</option>
+                  <option>Rahul</option><option>Amit</option><option>Priya</option><option>Sourav</option><option>Neha</option><option>Other</option>
+                </select>
+              </label>
+              <label>Mobile Number
+                <select id="opsMobile" required>
+                  <option value="">Select mobile</option>
+                  <option>9876543210</option><option>9876501234</option><option>9830012345</option><option>9903012345</option><option>Other</option>
+                </select>
+              </label>
+              <label>Department
+                <select id="opsDepartment" required></select>
+              </label>
+              <label>Designation
+                <select id="opsDesignation" required>
+                  <option value="">Select designation</option>
+                  <option>Department Head</option>
+                  <option>Sub Head</option>
+                  <option>Supervisor</option>
+                  <option>Zone In-charge</option>
+                  <option>Vendor POC</option>
+                  <option>Volunteer Lead</option>
+                  <option>Field Executive</option>
+                </select>
+              </label>
+              <label class="full">Task / Activity
+                <select id="opsTask" required></select>
+              </label>
+              <label>Exact Location / Point
+                <select id="opsLocation" required>
+                  <option value="">Select location</option>
+                  <option>Expo Venue</option>
+                  <option>Main Entry</option>
+                  <option>Start Gate</option>
+                  <option>Finish Gate</option>
+                  <option>Holding Area</option>
+                  <option>Baggage Area</option>
+                  <option>Medical Zone</option>
+                  <option>Hydration H01</option>
+                  <option>Hydration H02</option>
+                  <option>Hydration H03</option>
+                  <option>KM 5</option>
+                  <option>KM 10</option>
+                  <option>KM 15</option>
+                  <option>Turnaround Point</option>
+                  <option>Parking</option>
+                  <option>Warehouse</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label>Current Status
+                <select id="opsStatus" required>
+                  <option>Working</option>
+                  <option>Verification</option>
+                  <option>Completed</option>
+                  <option>Delayed</option>
+                  <option>Critical</option>
+                  <option>Not Started</option>
+                </select>
+              </label>
+              <label>Work Completed %
+                <select id="opsProgress" required>
+                  <option value="0">0%</option><option value="10">10%</option><option value="25">25%</option><option value="50" selected>50%</option><option value="75">75%</option><option value="90">90%</option><option value="100">100%</option>
+                </select>
+              </label>
+              <label>Issue / Delay
+                <select id="opsIssue">
+                  <option value="">No issue</option>
+                  <option>Material pending</option>
+                  <option>Vendor delayed</option>
+                  <option>Manpower shortage</option>
+                  <option>Vehicle / logistics delay</option>
+                  <option>Power / electrical issue</option>
+                  <option>Permission / authority issue</option>
+                  <option>Weather impact</option>
+                  <option>Client approval pending</option>
+                  <option>Site access issue</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label>Expected Completion
+                <select id="opsEta">
+                  <option value="">Select ETA</option>
+                  <option>Within 15 min</option>
+                  <option>Within 30 min</option>
+                  <option>Within 1 hour</option>
+                  <option>Within 2 hours</option>
+                  <option>Before race start</option>
+                  <option>Awaiting dependency</option>
+                </select>
+              </label>
+              <label>Physical Verification
+                <select id="opsVerified">
+                  <option value="yes">Yes — physically checked</option>
+                  <option value="no">No — update received remotely</option>
+                </select>
+              </label>
+              <label class="full">Short Update / Remark
+                <select id="opsRemark">
+                  <option value="">Select quick remark</option>
+                  <option>Work going as planned</option>
+                  <option>Final finishing underway</option>
+                  <option>Ready for supervisor verification</option>
+                  <option>Completed and site cleared</option>
+                  <option>Waiting for material</option>
+                  <option>Waiting for manpower</option>
+                  <option>Client input required</option>
+                  <option>Escalation required</option>
+                </select>
+              </label>
+              <label class="full upload-zone" for="opsPhoto">
+                <input id="opsPhoto" type="file" accept="image/*" capture="environment" />
+                <div id="uploadText">
+                  <span class="upload-icon">📷</span>
+                  <strong>Take Live Photo / Upload Proof</strong>
+                  <small>On phone, this opens the rear camera directly where supported.</small>
+                </div>
+                <img id="photoPreview" alt="" />
+              </label>
+              <button class="btn primary full large" type="submit">Submit Live Update</button>
+            </form>
+            <div id="successToast" class="success-toast">✓ Update submitted successfully</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modals -->
+      <div class="modal" id="eventModal">
+        <div class="modal-card">
+          <div class="modal-head"><h3>Create New Event</h3><button id="closeEventModal">×</button></div>
+          <form id="eventForm" class="form-grid">
+            <label class="full">Event / Race Name<input id="eventName" required placeholder="e.g. Kolkata Half Marathon 2027" /></label>
+            <label>Client Name<input id="eventClient" required placeholder="Client / Brand" /></label>
+            <label>City / Venue<input id="eventCity" required placeholder="Kolkata" /></label>
+            <label>Race Date<input id="eventDate" type="date" required /></label>
+            <label>Project Lead<input id="eventLead" required placeholder="Project Head" /></label>
+            <label>Event Type
+              <select id="eventType"><option>Marathon</option><option>Half Marathon</option><option>10K / 5K Run</option><option>Corporate Run</option><option>Expo + Race</option></select>
+            </label>
+            <button class="btn primary full" type="submit">Create Event & Open Dashboard</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal" id="taskModal">
+        <div class="modal-card">
+          <div class="modal-head"><h3>Add New Task</h3><button id="closeTaskModal">×</button></div>
+          <form id="taskForm" class="form-grid">
+            <label>Task ID<input id="taskId" required placeholder="VEN-PRO-001" /></label>
+            <label>Department<input id="taskDept" required placeholder="Production" /></label>
+            <label class="full">Task / Activity<input id="taskName" required placeholder="Install Start Gate structure" /></label>
+            <label>Location<input id="taskLocation" required placeholder="Start Gate" /></label>
+            <label>Owner<input id="taskOwner" required placeholder="Team / Person" /></label>
+            <label>Status<select id="taskStatus"><option>Not Started</option><option>Working</option><option>Delayed</option><option>Critical</option><option>Verification</option><option>Completed</option></select></label>
+            <label>Progress %<input id="taskProgress" type="number" min="0" max="100" value="0" /></label>
+            <label class="check full"><input id="taskClientVisible" type="checkbox" checked /> <span>Show this task on Client View</span></label>
+            <button class="btn primary full" type="submit">Create Task</button>
+          </form>
+        </div>
+      </div>
+    
+      <footer class="premium-footer">
+        <div class="footer-brand">
+          <div class="footer-logo">LIVEOPS</div>
+          <p>Professional marathon execution visibility for clients, project heads and operations teams.</p>
+        </div>
+        <div>
+          <span class="footer-title">Platform</span>
+          <a href="#" data-jump="client">Client View</a>
+          <a href="#" data-jump="admin">Admin Dashboard</a>
+          <a href="#" data-jump="ops">Operations Portal</a>
+        </div>
+        <div>
+          <span class="footer-title">Operations</span>
+          <a href="#">Live Tracking</a>
+          <a href="#">Proof Gallery</a>
+          <a href="#">Reports</a>
+        </div>
+        <div class="footer-company">
+          <span class="footer-title">Company</span>
+          <strong id="footerCompanyName">Vyaksha International Pvt Ltd</strong>
+          <small>All rights reserved.</small>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
