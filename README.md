@@ -1,28 +1,9 @@
-# Marathon LiveOps — Fresh GitHub Build
+# Marathon LiveOps V2 Fresh Prototype
 
-This is the consolidated GitHub Pages version.
+Upload the CONTENTS of this folder to the GitHub repository root only after approval.
 
-Implemented:
-- Updated THE NILE MILE logo artwork in header.
-- No affiliation line below the logo.
-- Marathon LiveOps positioned only as "Operations Technology Service".
-- Premium SVG home icon.
-- Sunrise marathon operations hero.
-- Contact details updated:
-  Park Centre, 8th Floor, Celica Park 24, Park Street, Kolkata – 700016.
-  +91 95237 60856
-  Rajeshkumar9523rama@gmail.com
-- Client Login / Admin access / Ops Update.
-- Event creation and duplication.
-- Race-wise event switching.
-- Event basics / project settings.
-- Master dropdown configuration.
-- Task control and client visibility.
-- Dropdown-first Ops Update portal.
-- Mobile camera proof upload.
-- Client readiness dashboard.
-- PPT export.
-- GitHub Pages compatible relative paths and .nojekyll.
+Demo credentials:
+- Client: client-demo / demo123
+- Ops: ops-rahul / demo123
 
-Important:
-This version still stores project state in browser localStorage. A shared real-time backend and secure authentication are the next production step.
+Important: this build demonstrates the requested access flow and Admin user creation in browser localStorage. It is not production-secure authentication. Real shared IDs/passwords, cross-device live updates and cloud photo proof require a backend/auth service before production use.
