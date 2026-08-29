@@ -1,4 +1,4 @@
-const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const $=(s,r=document)=>(typeof r==='string'?document.querySelector(r):r).querySelector(s), $$=(s,r=document)=>[...(typeof r==='string'?document.querySelector(r):r).querySelectorAll(s)];
 const STORE='marathonLiveOpsV1';
 const seed={
   users:[
