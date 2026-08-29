@@ -1,6 +1,6 @@
 (function(){
   const cfg = window.LIVEOPS_CONFIG || {mode:'demo'};
-  const isConfigured = ['cloud', 'supabase'].includes(cfg.mode) && cfg.supabaseUrl && cfg.supabaseAnonKey && window.supabase;
+  const isConfigured = ['cloud','supabase'].includes(cfg.mode) && cfg.supabaseUrl && cfg.supabaseAnonKey && cfg.projectId && window.supabase;
   let client = null;
   let channel = null;
   if(isConfigured){ client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey); }
@@ -26,9 +26,8 @@
     if(!client) return {demo:true};
     // Production convention: each LiveOps User ID maps to a private auth alias.
     // Accounts are provisioned by Admin through the secure server-side function.
-    const email = String(userId).includes('@')
-  ? String(userId).trim().toLowerCase()
-  : `${String(userId).trim().toLowerCase()}@users.marathonliveops.in`;
+    const rawId=String(userId).trim().toLowerCase();
+    const email = rawId.includes('@') ? rawId : `${rawId}@users.marathonliveops.in`;
     const {data,error} = await client.auth.signInWithPassword({email,password});
     if(error) throw error;
     const {data:profile,error:pErr} = await client.from('profiles').select('*').eq('id',data.user.id).single();
@@ -37,20 +36,17 @@
       .select('role,department,zone,is_active').eq('project_id',cfg.projectId).eq('user_id',data.user.id).single();
     if(mErr) throw mErr;
     if(!membership?.is_active) throw new Error('Project access is inactive');
-    return {
-  user: data.user,
-  profile,
-  membership
-};
-}
+    return {user:data.user,profile,membership};
+  }
+
   async function signOut(){ if(client) await client.auth.signOut(); }
 
   async function loadState(role){
     if(!client || !cfg.projectId) return null;
     const audience = role === 'client' ? 'client' : 'internal';
     const {data,error} = await client.from('project_snapshots')
-      .select('payload,updated_at').eq('project_id',cfg.projectId).eq('audience',audience).single();
-    if(error && error.code !== 'PGRST116') throw error;
+      .select('payload,updated_at').eq('project_id',cfg.projectId).eq('audience',audience).maybeSingle();
+    if(error) throw error;
     return data?.payload || null;
   }
 

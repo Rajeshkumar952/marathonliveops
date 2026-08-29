@@ -1,4 +1,6 @@
-const $=(s,r=document)=>(typeof r==='string'?document.querySelector(r):r).querySelector(s), $$=(s,r=document)=>[...(typeof r==='string'?document.querySelector(r):r).querySelectorAll(s)];
+const resolveRoot=(r=document)=>typeof r==='string'?document.querySelector(r):r;
+const $=(s,r=document)=>resolveRoot(r)?.querySelector(s)??null;
+const $$=(s,r=document)=>[...(resolveRoot(r)?.querySelectorAll(s)??[])];
 const STORE='marathonLiveOpsV1';
 const seed={
   users:[
@@ -77,8 +79,13 @@ $('#contactForm').addEventListener('submit',async e=>{
 });
 function openLogin(role){
   const cfg={ops:['OPS ACCESS','Your ground. Your tasks. Your updates.','Authorised operations personnel only.','ops / ops123'],client:['CLIENT ACCESS','Welcome to Marathon LiveOps','Secure access to your live project updates.','client / client123'],admin:['ADMIN ACCESS','Command the entire operation.','Configuration, verification and visibility control.','admin / admin123']}[role];
-  $('#loginRole').value=role; $('#loginAccess').textContent=cfg[0];$('#loginTitle').textContent=cfg[1];$('#loginHelp').textContent=cfg[2];$('#demoCredentials').innerHTML=`Demo login: <b>${cfg[3]}</b>`;
-  $('#loginCard').className='login-modal '+role;$('#loginModal').classList.remove('hidden');$('#loginUser').value=role;$('#loginPassword').value=role==='admin'?'admin123':role==='ops'?'ops123':'client123';
+  $('#loginRole').value=role; $('#loginAccess').textContent=cfg[0];$('#loginTitle').textContent=cfg[1];$('#loginHelp').textContent=cfg[2];
+  const cloudMode=!!window.LiveOpsCloud?.isConfigured();
+  $('#demoCredentials').classList.toggle('hidden',cloudMode);
+  $('#demoCredentials').innerHTML=cloudMode?'':`Demo login: <b>${cfg[3]}</b>`;
+  $('#loginCard').className='login-modal '+role;$('#loginModal').classList.remove('hidden');
+  $('#loginUser').value=cloudMode?'':role;
+  $('#loginPassword').value=cloudMode?'':(role==='admin'?'admin123':role==='ops'?'ops123':'client123');
 }
 $('#loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
@@ -86,25 +93,12 @@ $('#loginForm').addEventListener('submit',async e=>{
   try{
     if(window.LiveOpsCloud?.isConfigured()){
       const auth=await window.LiveOpsCloud.signIn(u,p);
-
-if(!auth?.profile || !auth?.membership || auth.membership.role !== role){
-  throw new Error('Role mismatch');
-}
-
-const cloudState=await window.LiveOpsCloud.loadState(role);
-
-if(cloudState){
-  state=cloudState;
-  localStorage.setItem(STORE,JSON.stringify(state));
-}
-
-launch({
-  id:u,
-  role:auth.membership.role,
-  name:auth.profile.name || u,
-  department:auth.membership.department || '',
-  zone:auth.membership.zone || ''
-});
+      if(!auth?.profile || !auth?.membership) throw new Error('Profile or project membership not found.');
+      if(auth.membership.role!==role) throw new Error(`This account has ${auth.membership.role} access, not ${role} access.`);
+      const cloudState=await window.LiveOpsCloud.loadState(role);
+      if(cloudState){ state=cloudState; localStorage.setItem(STORE,JSON.stringify(state)); }
+      else if(role!=='client'){ await window.LiveOpsCloud.saveState(state,role); }
+      launch({id:auth.profile.liveops_user_id||u,role:auth.membership.role,name:auth.profile.name||u,department:auth.membership.department||'',zone:auth.membership.zone||''});
       unsubscribeCloud();
       unsubscribeCloud=window.LiveOpsCloud.subscribe(role,newState=>{state=newState;localStorage.setItem(STORE,JSON.stringify(state));if(session.page)navigate(session.page);toast('Live project update received.');});
       return;
@@ -112,10 +106,7 @@ launch({
     const user=state.users.find(x=>x.id===u&&x.password===p&&x.role===role);
     if(!user)return toast('Incorrect User ID or password.');
     launch(user);
-  }catch(err){
-  console.error('LOGIN ERROR:', err);
-  toast(err?.message || 'Login failed.');
-}
+  }catch(err){console.error('LOGIN ERROR:',err);toast(err?.message||'Login failed.');}
 });
 $('#logoutBtn').onclick=async()=>{unsubscribeCloud();unsubscribeCloud=()=>{};if(window.LiveOpsCloud?.isConfigured())await window.LiveOpsCloud.signOut();session={role:null,user:null,page:null,selectedTask:null};$('#appShell').classList.add('hidden');$('#publicSite').classList.remove('hidden');$('#publicNav').classList.remove('hidden');$('.footer').classList.remove('hidden');window.scrollTo(0,0)};
 function launch(user){session.user=user;session.role=user.role;$('#loginModal').classList.add('hidden');$('#publicSite').classList.add('hidden');$('#publicNav').classList.add('hidden');$('.footer').classList.add('hidden');$('#appShell').classList.remove('hidden');buildSidebar();navigate(user.role==='admin'?'dashboard':user.role==='ops'?'ops-home':'client-overview')}
@@ -135,17 +126,17 @@ function bindQuick(){ $$('[data-action]').forEach(b=>b.onclick=()=>{const a=b.da
 
 const pages={
  dashboard(){setHead('Command Centre',`${state.project.name} • ${state.project.eventDay}`);const completed=state.tasks.filter(t=>t.verified).length,working=state.tasks.filter(t=>/working|started/i.test(t.status)).length,blocked=state.tasks.filter(t=>/blocked|unable/i.test(t.status)).length,pending=state.tasks.filter(t=>t.status==='Finished'&&!t.verified).length;$('#appContent').innerHTML=`<div class="kpi-grid">${stat('PROJECT READY',state.project.readiness+'%')}${stat('VERIFIED',completed,'green')}${stat('WORKING',working,'blue')}${stat('DELAYED',state.issues.length,'amber')}${stat('BLOCKED',blocked,'red')}${stat('PROOF PENDING',pending,'amber')}</div><div class="panel-grid"><div class="panel"><h3>ATTENTION REQUIRED</h3>${state.issues.map(i=>`<div class="attention-row"><span class="status ${statusClass(i.severity)}">${i.severity}</span><b>${esc(i.title)}</b><span>${i.task}</span><span>${i.time}</span></div>`).join('')||'<p>No open issues.</p>'}<div class="attention-row"><span class="status amber">Proof Pending</span><b>Finish Gate Branding</b><span>Venue</span><span>04:08 AM</span></div></div><div class="panel"><h3>QUICK ACTIONS</h3><div class="action-grid">${quickBtn('+ Create Task','create-task')}${quickBtn('+ Add Team','add-team')}${quickBtn('↻ Request Update','request-update')}${quickBtn('▣ Broadcast','broadcast')}${quickBtn('✉ Open Chat','open-chat')}</div></div></div><div class="panel" style="margin-top:16px"><h3>DEPARTMENT READINESS</h3>${deptCards()}</div>`;bindQuick()},
- projects(){setHead('Projects','Project phases, departments and locations.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="newProject">+ Create Project</button><button class="btn ghost" id="editProject">Edit Current Project</button></div><div class="panel"><h3>${esc(state.project.name)}</h3><p>Readiness: <b>${state.project.readiness}%</b> • ${esc(state.project.eventDay)} • Last update ${esc(state.project.lastUpdate)}</p><div class="bar"><i style="width:${state.project.readiness}%"></i></div></div><div class="panel" style="margin-top:16px"><h3>PHASE / DEPARTMENT SETUP</h3>${deptCards()}</div>`;$('#newProject').onclick=()=>toast('Project creator ready for backend connection.');$('#editProject').onclick=()=>{const n=prompt('Project name',state.project.name);if(n){state.project.name=n;save();pages.projects()}}},
+ projects(){setHead('Projects','Project phases, departments and locations.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="newProject">+ Create Project</button><button class="btn ghost" id="editProject">Edit Current Project</button></div><div class="panel"><h3>${esc(state.project.name)}</h3><p>Readiness: <b>${state.project.readiness}%</b> • ${esc(state.project.eventDay)} • Last update ${esc(state.project.lastUpdate)}</p><div class="bar"><i style="width:${state.project.readiness}%"></i></div></div><div class="panel" style="margin-top:16px"><h3>PHASE / DEPARTMENT SETUP</h3>${deptCards()}</div>`;$('#newProject').onclick=()=>toast('Project creation is not enabled in this build yet.');$('#editProject').onclick=()=>{const n=prompt('Project name',state.project.name);if(n){state.project.name=n;save();pages.projects()}}},
  tasks(){setHead('Tasks','Create, configure, assign, escalate and close work.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="createTask">+ Create Task</button><button class="btn ghost" id="exportTasks">Export CSV</button></div><div class="data-table"><div class="data-head"><span>Task</span><span>Priority</span><span>Department</span><span>Assigned</span><span>Status</span><span>Action</span></div>${state.tasks.map(t=>`<div class="data-row"><b>${esc(t.name)}<br><small>${t.id}</small></b><span>${t.priority}</span><span>${t.department}</span><span>${t.assignedTo}</span><span class="status ${statusClass(t.status)}">${t.status}</span><button data-edit-task="${t.id}">Edit</button></div>`).join('')}</div>`;$('#createTask').onclick=renderTaskForm;$('#exportTasks').onclick=exportTasksCSV;$$('[data-edit-task]').forEach(b=>b.onclick=()=>renderTaskForm(b.dataset.editTask))},
  team(){setHead('Team & Access','Control user, role, department, zone and permissions.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="addMember">+ Add Member</button></div><div class="data-table"><div class="data-head"><span>Name</span><span>Role</span><span>Department</span><span>Zone</span><span>Access</span><span>Status</span></div>${state.team.map(x=>`<div class="data-row"><b>${esc(x.name)}</b><span>${esc(x.role)}</span><span>${esc(x.department)}</span><span>${esc(x.zone)}</span><span>${esc(x.access)}</span><span class="status green">${esc(x.status)}</span></div>`).join('')}</div>`;$('#addMember').onclick=renderAddTeam},
  fields(){setHead('Form & Field Control','Admin decides exactly what information Ops must submit.');renderFieldBuilder()},
  proof(){setHead('Proof Verification','Approve, reject or request rework before client visibility.');renderProofs()},
  issues(){setHead('Issues & Blockers','Problems should find Admin automatically.');$('#appContent').innerHTML=`<div class="data-table"><div class="data-head"><span>Issue</span><span>Severity</span><span>Task</span><span>Status</span><span>Time</span><span>Action</span></div>${state.issues.map(i=>`<div class="data-row"><b>${esc(i.title)}</b><span class="status ${statusClass(i.severity)}">${i.severity}</span><span>${i.task}</span><span>${i.status}</span><span>${i.time}</span><button data-resolve="${i.id}">Resolve</button></div>`).join('')}</div>`;$$('[data-resolve]').forEach(b=>b.onclick=()=>{state.issues=state.issues.filter(i=>i.id!==b.dataset.resolve);save();pages.issues();toast('Issue resolved.');})},
- vendors(){setHead('Vendors & Logistics','Vendor, vehicle, driver, material movement and ETA controls.');$('#appContent').innerHTML=`<div class="panel"><h3>LOGISTICS CONTROL FIELDS</h3><div class="form-grid"><div class="form-group"><label>Vendor Name</label><input placeholder="Vendor name"></div><div class="form-group"><label>Vendor POC</label><input placeholder="POC name"></div><div class="form-group"><label>Contact</label><input placeholder="Contact number"></div><div class="form-group"><label>Vehicle No.</label><input placeholder="WB 00 XX 0000"></div><div class="form-group"><label>Driver No.</label><input placeholder="Driver contact"></div><div class="form-group"><label>ETA</label><input type="time"></div><div class="form-group span2"><label>Material / Quantity</label><textarea rows="3"></textarea></div></div><button class="btn primary" id="saveVendor" style="margin-top:14px">Save Logistics Record</button></div>`;$('#saveVendor').onclick=()=>toast('Logistics record saved in demo.')},
+ vendors(){setHead('Vendors & Logistics','Vendor, vehicle, driver, material movement and ETA controls.');$('#appContent').innerHTML=`<div class="panel"><h3>LOGISTICS CONTROL FIELDS</h3><div class="form-grid"><div class="form-group"><label>Vendor Name</label><input placeholder="Vendor name"></div><div class="form-group"><label>Vendor POC</label><input placeholder="POC name"></div><div class="form-group"><label>Contact</label><input placeholder="Contact number"></div><div class="form-group"><label>Vehicle No.</label><input placeholder="WB 00 XX 0000"></div><div class="form-group"><label>Driver No.</label><input placeholder="Driver contact"></div><div class="form-group"><label>ETA</label><input type="time"></div><div class="form-group span2"><label>Material / Quantity</label><textarea rows="3"></textarea></div></div><button class="btn primary" id="saveVendor" style="margin-top:14px">Save Logistics Record</button></div>`;$('#saveVendor').onclick=()=>toast('Logistics form UI is ready; persistent vendor records need the vendor data module.')},
  'client-control'(){setHead('Client Control','Choose exactly what the client can see, approve or provide.');const r=state.clientRules;$('#appContent').innerHTML=`<div class="panel-grid"><div class="panel"><h3>VISIBILITY RULES</h3>${[['overall','Overall Project Readiness'],['departments','Department Progress'],['approvedProof','Approved Ground Proof'],['internalRemarks','Internal Remarks'],['vendorContacts','Vendor Contact Details'],['unverifiedIssues','Issues Before Verification']].map(([k,l])=>`<div class="switch-line"><span>${l}</span><button class="switch ${r[k]?'on':''}" data-rule="${k}">${r[k]?'SHOW':'HIDE'}</button></div>`).join('')}</div><div class="panel"><h3>CLIENT ACTION REQUEST</h3><div class="action-grid"><button class="action-btn" data-request="Approve artwork">+ Approve artwork</button><button class="action-btn" data-request="Upload sponsor logo">+ Upload sponsor logo</button><button class="action-btn" data-request="Confirm quantity">+ Confirm quantity</button><button class="action-btn" data-request="Add response">+ Add remark / response</button></div></div></div>`;$$('[data-rule]').forEach(b=>b.onclick=()=>{const k=b.dataset.rule;state.clientRules[k]=!state.clientRules[k];save();pages['client-control']()});$$('[data-request]').forEach(b=>b.onclick=()=>{state.approvals.unshift({id:'AP-'+Date.now(),title:b.dataset.request,type:b.dataset.request,status:'Pending',note:'Requested by Admin.'});save();toast('Client request created.');})},
  chat(){setHead('Project Chat & Help','Task-linked conversations between Admin, Ops and Client.');renderChat('admin')},
  reports(){setHead('Reports & Records','Export client-safe or internal project records.');$('#appContent').innerHTML=`<div class="panel-grid"><div class="panel"><h3>LIVE PROJECT REPORT</h3><p>Generated from the current saved project state.</p><div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">${stat('READINESS',state.project.readiness+'%')}${stat('TASKS',state.tasks.length)}${stat('ISSUES',state.issues.length,'amber')}</div><div class="page-actions" style="margin-top:18px"><button class="btn primary" id="printReport">Print / Save PDF</button><button class="btn ghost" id="csvReport">Export Tasks CSV</button></div></div><div class="panel"><h3>REPORT INCLUDES</h3><p>✓ Project readiness<br>✓ Department progress<br>✓ Task status<br>✓ Verified milestones<br>✓ Approved proofs<br>✓ Client approvals<br>✓ Decision / chat history</p></div></div>`;$('#printReport').onclick=()=>window.print();$('#csvReport').onclick=exportTasksCSV},
- settings(){setHead('Settings','Project defaults and demo controls.');$('#appContent').innerHTML=`<div class="panel"><h3>DEMO DATA</h3><p>Reset the local demo back to the approved prototype defaults.</p><button class="btn ghost" id="resetDemo">Reset Demo Data</button></div>`;$('#resetDemo').onclick=()=>{if(confirm('Reset all local demo changes?')){state=structuredClone(seed);save();navigate('dashboard');toast('Demo reset.')}}},
+ settings(){setHead('Settings','Project defaults and local recovery controls.');$('#appContent').innerHTML=`<div class="panel"><h3>LOCAL RECOVERY DATA</h3><p>Reset this browser copy back to the approved prototype defaults.</p><button class="btn ghost" id="resetDemo">Reset Local Data</button></div>`;$('#resetDemo').onclick=()=>{if(confirm('Reset all local browser changes?')){state=structuredClone(seed);save();navigate('dashboard');toast('Local data reset.')}}},
  'ops-home'(){setHead('Ops Home',`${session.user.name} • ${session.user.department||''} • ${session.user.zone||''}`);const tasks=state.tasks.filter(t=>t.assignedTo===session.user.id);const urgent=tasks.find(t=>!t.verified&&t.status!=='Finished')||tasks[0];$('#appContent').innerHTML=`<div class="ops-home"><div class="ops-banner"><h2>Good Morning, ${esc(session.user.name)}</h2><p>${esc(state.project.name)} • ${esc(session.user.department||'Operations')} • ${esc(session.user.zone||'Assigned Area')}</p></div><div class="ops-icons">${[['▦','My Tasks','ops-tasks'],['↻','Update','ops-update'],['▧','Proof','ops-proof'],['!','Issue','ops-issue'],['▣','Instructions','ops-instructions'],['✉','Chat','ops-chat']].map(x=>`<button class="ops-icon" data-page="${x[2]}"><b>${x[0]}</b>${x[1]}</button>`).join('')}</div><h4>DO NOW</h4>${urgent?taskCard(urgent,true):'<p>No assigned tasks.</p>'}</div>`;$$('[data-page]','#appContent').forEach(b=>b.onclick=()=>navigate(b.dataset.page));bindTaskButtons()},
  'ops-tasks'(){setHead('My Tasks','Only work assigned to you.');const tasks=state.tasks.filter(t=>t.assignedTo===session.user.id);$('#appContent').innerHTML=`<div class="ops-home"><div class="page-actions"><button class="btn primary" data-filter="open">Do Now</button><button class="btn ghost" data-filter="next">Next</button><button class="btn ghost" data-filter="done">Done</button></div><div id="opsTaskList">${tasks.map(t=>taskCard(t)).join('')}</div></div>`;bindTaskButtons()},
  'ops-update'(){setHead('Update Status','Complete only the fields Admin requested.');const t=getOpsTask();if(!t)return noTask();renderOpsUpdate(t)},
