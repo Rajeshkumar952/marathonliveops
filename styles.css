@@ -48,3 +48,199 @@ body{background:var(--paper);color:var(--ink);letter-spacing:-.01em}
 /* ===== V4 live-event resilience ===== */
 .sync-badge{font-size:9px;font-weight:800;letter-spacing:.08em;padding:7px 10px;border-radius:999px;background:#e9f7ef;color:#12673e;border:1px solid #ccebd9;white-space:nowrap}.sync-badge.offline{background:#fff0f0;color:#a82f38;border-color:#f3c7ca}.sync-badge.pending{background:#fff5df;color:#8a5a00;border-color:#f1ddb1}.proof-sync{position:absolute;right:7px;bottom:7px;background:#fff5df;color:#8a5a00;padding:4px 6px;border-radius:6px;font-size:8px;font-style:normal;font-weight:800}.upload-tile{position:relative}.upload-tile img{display:block}
 @media(max-width:760px){.sync-badge{font-size:8px;padding:6px 8px}}
+
+/* =========================================================
+   Marathon LiveOps — Mobile Responsive Fix V4.2
+   Keeps desktop/tablet design intact; improves <= 760px only.
+   ========================================================= */
+@media (max-width: 760px) {
+  html { scroll-padding-top: 170px; }
+  body { overflow-x: hidden; }
+
+  /* Public header: show brand, both logins, settings and all navigation */
+  .topbar {
+    height: auto;
+    min-height: 0;
+    padding: 10px 14px 11px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px 10px;
+    align-items: center;
+  }
+
+  .brand {
+    width: 100%;
+    min-width: 0;
+    gap: 10px;
+  }
+  .brand-mark {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+  }
+  .brand strong {
+    font-size: 18px;
+    line-height: 1.1;
+  }
+  .brand small {
+    display: block;
+    font-size: 8px;
+    margin-top: 3px;
+  }
+
+  .nav-actions {
+    order: 2;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 42px;
+    gap: 7px;
+  }
+  .nav-actions .ghost,
+  .nav-actions .primary,
+  .nav-actions .icon-btn {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+  .nav-actions .btn {
+    padding: 10px 7px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .nav-actions .icon-btn {
+    padding: 9px 0;
+  }
+
+  .navlinks {
+    order: 3;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    border-top: 1px solid rgba(16,24,32,.08);
+    padding-top: 8px;
+  }
+  .navlinks a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 6px 2px;
+    font-size: 9.5px;
+    line-height: 1.15;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .navlinks span { display: none; }
+  .navlinks a:after { bottom: 0; }
+
+  /* Hero: phone-first proportions */
+  .hero {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-bg { background-position: 52% center; }
+  .hero-overlay {
+    background: linear-gradient(180deg, rgba(6,18,36,.70) 0%, rgba(6,18,36,.88) 72%, rgba(6,18,36,.96) 100%);
+  }
+  .hero-content {
+    width: 100%;
+    max-width: none;
+    padding: 64px 20px 32px;
+  }
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: .18em;
+  }
+  .hero h1 {
+    font-size: clamp(38px, 11.2vw, 48px);
+    line-height: 1.02;
+    margin: 16px 0 20px;
+    letter-spacing: -.045em;
+  }
+  .hero p {
+    font-size: 15px;
+    line-height: 1.62;
+    max-width: 100%;
+  }
+  .hero-points {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 7px;
+    margin: 22px 0;
+    font-size: 11px;
+  }
+  .hero-points span { padding-left: 10px; }
+  .hero-cta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+  .hero-cta .btn {
+    width: 100%;
+    padding: 12px 8px;
+    font-size: 11px;
+  }
+  .hero-strip {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: auto;
+    margin: 0 14px 16px;
+    grid-template-columns: 1fr;
+    border-radius: 13px;
+  }
+  .hero-strip article {
+    padding: 12px 16px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,.09);
+  }
+  .hero-strip article:last-child { border-bottom: 0; }
+
+  /* Public content sections */
+  .section { padding: 54px 20px; }
+  .section h2 { font-size: 31px; line-height: 1.12; }
+  .section-head p, .about-copy p { font-size: 14px; line-height: 1.65; }
+  .pillar-grid, .ops-gallery, .about, .contact { grid-template-columns: 1fr; }
+  .pillar-grid { gap: 12px; }
+  .pillar { padding: 22px 18px; }
+  .metric-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .metric-grid > div { min-height: 112px; padding: 16px; }
+  .contact-card { padding: 24px 18px; }
+
+  /* Login modal fits the screen instead of overflowing */
+  .modal-backdrop {
+    padding: 12px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+  .login-modal {
+    width: 100%;
+    max-width: 520px;
+    margin: 12px auto;
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+  .login-photo { min-height: 155px; }
+  .login-pane { padding: 24px 18px 26px; }
+  .login-pane h2 { font-size: 29px; line-height: 1.08; }
+
+  /* Footer */
+  .footer {
+    padding: 24px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 390px) {
+  .brand strong { font-size: 17px; }
+  .navlinks a { font-size: 8.8px; }
+  .nav-actions .btn { font-size: 10px; }
+  .hero-content { padding-left: 18px; padding-right: 18px; }
+  .hero h1 { font-size: 39px; }
+  .hero-cta { grid-template-columns: 1fr; }
+}
