@@ -1,7 +1,10 @@
-// Safe default: Premium V3 runs locally in demo mode until Supabase is connected.
+// Marathon LiveOps — Supabase Production Configuration
 window.LIVEOPS_CONFIG = {
-  mode: 'demo',
-  supabaseUrl: '',
-  supabaseAnonKey: '',
+  mode: 'supabase',
+
+  supabaseUrl: 'https://qmvaajziogyffrnivpuj.supabase.co',
+
+  supabaseAnonKey: 'sb_publishable_CFrWvwl2oWgg1iqhU6PSOQ_zPERdqak',
+
   projectId: ''
 };
