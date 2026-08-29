@@ -37,8 +37,11 @@
       .select('role,department,zone,is_active').eq('project_id',cfg.projectId).eq('user_id',data.user.id).single();
     if(mErr) throw mErr;
     if(!membership?.is_active) throw new Error('Project access is inactive');
-    return {user:data.user,profile:{...profile,...membership}};
-  }
+    return {
+  user: data.user,
+  profile,
+  membership
+};
 
   async function signOut(){ if(client) await client.auth.signOut(); }
 
