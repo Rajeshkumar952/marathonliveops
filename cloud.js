@@ -1,6 +1,6 @@
 (function(){
   const cfg = window.LIVEOPS_CONFIG || {mode:'demo'};
-  const isConfigured = cfg.mode === 'cloud' && cfg.supabaseUrl && cfg.supabaseAnonKey && window.supabase;
+  const isConfigured = ['cloud', 'supabase'].includes(cfg.mode) && cfg.supabaseUrl && cfg.supabaseAnonKey && window.supabase;
   let client = null;
   let channel = null;
   if(isConfigured){ client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey); }
