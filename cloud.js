@@ -26,7 +26,9 @@
     if(!client) return {demo:true};
     // Production convention: each LiveOps User ID maps to a private auth alias.
     // Accounts are provisioned by Admin through the secure server-side function.
-    const email = `${String(userId).toLowerCase()}@users.marathonliveops.in`;
+    const email = String(userId).includes('@')
+  ? String(userId).trim().toLowerCase()
+  : `${String(userId).trim().toLowerCase()}@users.marathonliveops.in`;
     const {data,error} = await client.auth.signInWithPassword({email,password});
     if(error) throw error;
     const {data:profile,error:pErr} = await client.from('profiles').select('*').eq('id',data.user.id).single();
