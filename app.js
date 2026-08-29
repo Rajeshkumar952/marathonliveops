@@ -112,7 +112,10 @@ launch({
     const user=state.users.find(x=>x.id===u&&x.password===p&&x.role===role);
     if(!user)return toast('Incorrect User ID or password.');
     launch(user);
-  }catch(err){console.error(err);toast('Incorrect login or cloud access not configured.');}
+  }catch(err){
+  console.error('LOGIN ERROR:', err);
+  toast(err?.message || 'Login failed.');
+}
 });
 $('#logoutBtn').onclick=async()=>{unsubscribeCloud();unsubscribeCloud=()=>{};if(window.LiveOpsCloud?.isConfigured())await window.LiveOpsCloud.signOut();session={role:null,user:null,page:null,selectedTask:null};$('#appShell').classList.add('hidden');$('#publicSite').classList.remove('hidden');$('#publicNav').classList.remove('hidden');$('.footer').classList.remove('hidden');window.scrollTo(0,0)};
 function launch(user){session.user=user;session.role=user.role;$('#loginModal').classList.add('hidden');$('#publicSite').classList.add('hidden');$('#publicNav').classList.add('hidden');$('.footer').classList.add('hidden');$('#appShell').classList.remove('hidden');buildSidebar();navigate(user.role==='admin'?'dashboard':user.role==='ops'?'ops-home':'client-overview')}
