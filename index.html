@@ -1,16 +1,157 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Marathon LiveOps | Operations Technology Service</title><link rel="stylesheet" href="styles.css"></head><body>
-<header><a href="#home" class="brand"><img src="assets/the-nile-mile-logo.png" alt="THE NILE MILE"></a><button id="menu" aria-label="Menu">☰</button><nav id="nav"><a href="#home" class="home" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-4.2v-5.6H9.7V20H5.5A1.5 1.5 0 0 1 4 18.5Z"/></svg></a><a href="#about">About Us</a><button data-login="client">Client Login</button><button class="accent" data-login="ops">Ops Update</button><a href="#contact">Contact Us</a></nav></header>
-<section class="hero" id="home"><div class="overlay"></div><div class="heroCopy"><span>MARATHON OPERATIONS TECHNOLOGY</span><h1>See It.<br>Control It.<br><b>Own It.</b></h1><p>Live infrastructure visibility for marathon operations — field updates, proof, issues and client-ready progress in one controlled platform.</p><small>MARATHON LIVEOPS · OPERATIONS TECHNOLOGY SERVICE</small></div></section>
-<section class="intro" id="about"><div><span>BUILT FOR LIVE EXECUTION</span><h2>From ground activity to management visibility.</h2><p>Marathon LiveOps is designed around one operational problem: the project head and client need to know what is actually happening without depending on repeated calls and scattered updates.</p></div><div class="numbers"><div><b>01</b><small>FIELD UPDATE</small></div><div><b>02</b><small>PROOF</small></div><div><b>03</b><small>CONTROL</small></div></div></section>
-<section class="story"><article class="photo infra"><div><span>LIVE INFRASTRUCTURE</span><h2>Know what is ready — zone by zone.</h2><p>Track gates, barricading, branding, hydration, medical, security, housekeeping and other race infrastructure as execution moves.</p></div></article><article class="photo proof"><div><span>PROOF VERIFICATION</span><h2>Every important update can carry evidence.</h2><p>Field teams can take a photo from the phone and attach it to the assigned task, reducing uncertainty between site and command center.</p></div></article><article class="photo control"><div><span>ONE VIEW CONTROL</span><h2>Different roles. One operational truth.</h2><p>Admin controls projects, tasks, users and visibility. Clients see approved progress. Ops members see only the work assigned to them.</p></div></article></section>
-<section class="flow"><span>HOW ACCESS WORKS</span><h2>Controlled from Admin.</h2><div class="flowGrid"><div><b>01</b><h3>Admin creates access</h3><p>Create Client and Ops user IDs, assign event, department and role.</p></div><div><b>02</b><h3>User signs in</h3><p>Client or field member enters the assigned ID and password.</p></div><div><b>03</b><h3>Role-based view</h3><p>Each user sees only the information and actions allowed for that account.</p></div><div><b>04</b><h3>Live execution</h3><p>Updates, proof and issues feed the project view for operational control.</p></div></div></section>
-<section class="contact" id="contact"><div><span>CONTACT</span><h2>Marathon operations, made visible.</h2><p>Park Centre, 8th Floor, Celica Park 24,<br>Park Street, Kolkata – 700016.</p><p><a href="tel:+919523760856">+91 95237 60856</a><br><a href="mailto:Rajeshkumar9523rama@gmail.com">Rajeshkumar9523rama@gmail.com</a></p></div><div class="contactCard"><h3>Marathon LiveOps</h3><p>Operations Technology Service</p><p>For project access, operations technology support and marathon execution visibility.</p></div></section>
-<footer><b>MARATHON LIVEOPS</b><span>© 2026 Utsara Sports Pvt Ltd. All rights reserved.</span></footer>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Marathon LiveOps</title>
+  <meta name="description" content="Live marathon operations control, proof, verification and client visibility." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="toast" class="toast" aria-live="polite"></div>
 
-<div id="loginModal" class="modal"><div class="loginBox"><button class="close">×</button><span id="loginType">CLIENT ACCESS</span><h2 id="loginTitle">Client Login</h2><p id="loginSub">Secure access to your assigned live project.</p><form id="loginForm"><label id="idLabel">CLIENT ID</label><input id="userId" autocomplete="username" required placeholder="Enter assigned ID"><label>PASSWORD</label><input id="password" type="password" autocomplete="current-password" required placeholder="Enter password"><button class="accent">LOGIN</button><em id="loginMsg"></em></form><small>Access is created and controlled by the Marathon LiveOps Admin.</small></div></div>
+  <header class="topbar" id="publicNav">
+    <a class="brand" href="#home" aria-label="Marathon LiveOps home">
+      <span class="brand-mark">ML</span>
+      <span><strong>Marathon LiveOps</strong><small>Marathon Operations Technology</small></span>
+    </a>
+    <nav class="navlinks">
+      <a href="#home"><span>⌂</span>Home</a>
+      <a href="#how"><span>↻</span>How It Works</a>
+      <a href="#about"><span>◎</span>About Us</a>
+      <a href="#contact"><span>✉</span>Let's Connect</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn ghost" data-open-login="client">◉ Client Login</button>
+      <button class="btn primary" data-open-login="ops">▦ Ops Login</button>
+      <button class="icon-btn" title="Admin login" data-open-login="admin">⚙</button>
+    </div>
+  </header>
 
-<section id="portal" class="portal"><aside><img src="assets/the-nile-mile-logo.png"><b>MARATHON LIVEOPS</b><button data-view="client">Client View</button><button data-view="ops">Ops Update</button><button data-view="admin">Admin</button><button id="exit">← Website</button></aside><main><div class="top"><div><span>LIVE PROJECT</span><h1 id="viewTitle">Dashboard</h1></div><i>● LIVE</i></div>
-<div class="view" id="clientView"><div class="banner"><div><h2>City Marathon 2026</h2><p>Client-approved project visibility</p></div><strong>73%<small>OVERALL READINESS</small></strong></div><div class="stats"><div><small>COMPLETED</small><b>18</b></div><div><small>WORKING</small><b>11</b></div><div><small>ATTENTION</small><b>3</b></div><div><small>PHOTO PROOF</small><b>24</b></div></div><div class="dashGrid"><section><h3>Department Readiness</h3><div class="bar"><label>Venue</label><i style="width:88%"></i><b>88%</b></div><div class="bar"><label>Race Course</label><i style="width:68%"></i><b>68%</b></div><div class="bar"><label>Hydration</label><i style="width:74%"></i><b>74%</b></div><div class="bar"><label>Medical</label><i style="width:91%"></i><b>91%</b></div></section><section><h3>Latest Approved Proof</h3><div class="proofs"><img src="assets/hero-ops.jpg"><img src="assets/proof-ops.jpg"></div></section></div></div>
-<div class="view" id="opsView"><div class="opsHead"><span>FIELD OPERATIONS</span><h2>Update in under 30 seconds.</h2><p>Your event, department and role are assigned by Admin.</p></div><form class="opsForm"><select><option>City Marathon 2026</option></select><select><option>Venue Department</option></select><select><option>Start / Finish Gate Structure</option></select><select><option>Start Gate</option></select><select><option>Working</option><option>Completed</option><option>Delayed</option><option>Critical</option></select><select><option>75%</option><option>100%</option></select><label class="upload"><input type="file" accept="image/*" capture="environment">📷 TAKE PHOTO / UPLOAD PROOF</label><button type="button" class="accent" id="demoSubmit">SUBMIT LIVE UPDATE</button><em id="opsMsg"></em></form></div>
-<div class="view" id="adminView"><div class="adminHead"><div><span>ADMIN COMMAND CENTER</span><h2>Users & Access</h2></div><button class="accent" id="newUser">+ CREATE USER</button></div><div class="adminGrid"><section><h3>Access Control</h3><table><thead><tr><th>USER</th><th>ROLE</th><th>EVENT</th><th>DEPARTMENT</th><th>STATUS</th></tr></thead><tbody id="userRows"></tbody></table></section><section><h3>Create User</h3><form id="userForm"><input id="nName" placeholder="Name" required><select id="nRole"><option>Client</option><option>Ops</option></select><input id="nId" placeholder="User ID" required><input id="nPass" placeholder="Temporary Password" required><select id="nDept"><option>Client View</option><option>Venue</option><option>Race Course</option><option>Hydration</option><option>Medical</option><option>Security</option></select><button class="accent">CREATE ACCESS</button></form></section></div></div>
-</main></section><script src="app.js"></script></body></html>
+  <main id="publicSite">
+    <section class="hero" id="home">
+      <div class="hero-bg"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="eyebrow">MARATHON OPERATIONS TECHNOLOGY</div>
+        <h1>From Ground Execution<br><span>to Live Control.</span></h1>
+        <p>A command layer for marathon execution — connecting ground teams, verified proof, management control and client visibility in real time.</p>
+        <div class="hero-points">
+          <span>Live infrastructure</span><span>Verified ground proof</span><span>Controlled visibility</span>
+        </div>
+        <div class="hero-cta">
+          <button class="btn primary large" data-open-login="ops">Ops Team Login</button>
+          <button class="btn light large" data-open-login="client">Client Access</button>
+        </div>
+      </div>
+      <div class="hero-strip">
+        <article><b>FIELD UPDATE</b><small>Ground team reports in seconds</small></article>
+        <article><b>PROOF</b><small>Photo, time, location & remarks</small></article>
+        <article><b>CONTROL</b><small>Admin verifies before client visibility</small></article>
+      </div>
+    </section>
+
+    <section class="section how" id="how">
+      <div class="section-head">
+        <span class="eyebrow dark">HOW WE WORK DIFFERENTLY</span>
+        <h2>Digital operations. Proof-backed execution.</h2>
+        <p>Built around the way a real marathon operations team plans, assigns, executes, proves and closes work.</p>
+      </div>
+      <div class="pillar-grid">
+        <article class="pillar"><div class="line-icon">▦</div><h3>Digital-First Operations</h3><b>Plan. Assign. Track. Update.</b><p>Structured workflows replace scattered calls, sheets and message chains.</p></article>
+        <article class="pillar"><div class="line-icon">▧</div><h3>Proof-Based Execution</h3><b>Don’t just mark it done. Prove it.</b><p>Photos, timestamps, remarks and verification build an auditable execution record.</p></article>
+        <article class="pillar"><div class="line-icon">◉</div><h3>Live Operational Visibility</h3><b>Ground updates. Management sees.</b><p>Progress, delays and blockers reach the right person without status-chasing.</p></article>
+        <article class="pillar"><div class="line-icon">✓</div><h3>Accountability at Every Level</h3><b>Every task has an owner.</b><p>Task → Location → Owner → Deadline → Status → Proof → Verification.</p></article>
+      </div>
+      <div class="ops-gallery">
+        <div class="gallery-card g1"><span>Hydration & route support</span></div>
+        <div class="gallery-card g2"><span>Ground execution</span></div>
+        <div class="gallery-card g3"><span>Race-course control</span></div>
+      </div>
+    </section>
+
+    <section class="section about" id="about">
+      <div class="about-copy">
+        <span class="eyebrow dark">ABOUT MARATHON LIVEOPS</span>
+        <h2>Built from real marathon operations. Designed for real-time execution.</h2>
+        <p>Marathon LiveOps connects project planning, ground teams, proof, verification, management control and client visibility in one operational platform.</p>
+        <div class="metric-note">Add only verified company metrics before production launch.</div>
+      </div>
+      <div class="metric-grid">
+        <div><strong>XX+</strong><span>Years of Operations Experience</span></div>
+        <div><strong>XX+</strong><span>Marathon / Running Events</span></div>
+        <div><strong>XX+</strong><span>Projects Executed</span></div>
+        <div><strong>XX+</strong><span>Cities / Locations</span></div>
+        <div><strong>XXK+</strong><span>Participants Supported</span></div>
+        <div><strong>XX+</strong><span>Departments Managed</span></div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="contact-card company-card">
+        <span class="eyebrow dark">LET'S CONNECT</span>
+        <h2>Marathon LiveOps</h2>
+        <h4>A unit of Utsara Sports Pvt Ltd.</h4>
+        <div class="contact-list">
+          <p><b>Office</b><br>Park Centre, 8th Floor, Celica Park 24, Park Street, Kolkata – 700016</p>
+          <p><b>Phone</b><br>+91 95237 60856</p>
+          <p><b>Email</b><br>Rajeshkumar9523rama@gmail.com</p>
+        </div>
+      </div>
+      <form class="contact-card form-card" id="contactForm">
+        <h3>CONTACT US</h3>
+        <label>Name<input required name="name" placeholder="Your name"></label>
+        <label>Contact<input required name="contact" placeholder="Phone number"></label>
+        <label>Email<input required type="email" name="email" placeholder="Email address"></label>
+        <label>Message<textarea required name="message" rows="4" placeholder="Short message"></textarea></label>
+        <button class="btn primary" type="submit">Send Enquiry</button>
+      </form>
+    </section>
+  </main>
+
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar" id="sidebar"></aside>
+    <section class="workspace">
+      <header class="app-header">
+        <div><h2 id="pageTitle">Dashboard</h2><p id="pageSubtitle"></p></div>
+        <div class="header-actions"><span class="live-pill">● LIVE</span><button class="btn ghost" id="logoutBtn">Log out</button></div>
+      </header>
+      <div id="appContent" class="app-content"></div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop hidden" id="loginModal">
+    <div class="login-modal" id="loginCard">
+      <button class="modal-close" id="closeLogin">×</button>
+      <div class="login-photo"></div>
+      <div class="login-pane">
+        <span class="eyebrow dark" id="loginAccess">OPS ACCESS</span>
+        <h2 id="loginTitle">Your ground. Your tasks. Your updates.</h2>
+        <p id="loginHelp">Authorised operations personnel only.</p>
+        <form id="loginForm">
+          <input type="hidden" id="loginRole" value="ops">
+          <label>User ID<input id="loginUser" autocomplete="username" required></label>
+          <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+          <button class="btn primary full" type="submit">Login</button>
+        </form>
+        <div class="demo-credentials" id="demoCredentials"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div><strong>Marathon LiveOps</strong><span>Marathon Operations Technology</span></div>
+    <div>© 2026 Utsara Sports Pvt. Ltd. All Rights Reserved.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="cloud.js"></script>
+  <script src="resilience.js"></script>
+  <script src="app.js"></script>
+  <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(console.warn));}</script>
+</body>
+</html>
