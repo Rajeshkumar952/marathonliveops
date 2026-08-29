@@ -42,7 +42,7 @@
   profile,
   membership
 };
-
+}
   async function signOut(){ if(client) await client.auth.signOut(); }
 
   async function loadState(role){
