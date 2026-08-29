@@ -86,10 +86,25 @@ $('#loginForm').addEventListener('submit',async e=>{
   try{
     if(window.LiveOpsCloud?.isConfigured()){
       const auth=await window.LiveOpsCloud.signIn(u,p);
-      if(!auth?.profile || auth.profile.role!==role) throw new Error('Role mismatch');
-      const cloudState=await window.LiveOpsCloud.loadState(role);
-      if(cloudState){ state=cloudState; localStorage.setItem(STORE,JSON.stringify(state)); }
-      launch({id:u,role,name:auth.profile.name||u,department:auth.profile.department||'',zone:auth.profile.zone||''});
+
+if(!auth?.profile || !auth?.membership || auth.membership.role !== role){
+  throw new Error('Role mismatch');
+}
+
+const cloudState=await window.LiveOpsCloud.loadState(role);
+
+if(cloudState){
+  state=cloudState;
+  localStorage.setItem(STORE,JSON.stringify(state));
+}
+
+launch({
+  id:u,
+  role:auth.membership.role,
+  name:auth.profile.name || u,
+  department:auth.membership.department || '',
+  zone:auth.membership.zone || ''
+});
       unsubscribeCloud();
       unsubscribeCloud=window.LiveOpsCloud.subscribe(role,newState=>{state=newState;localStorage.setItem(STORE,JSON.stringify(state));if(session.page)navigate(session.page);toast('Live project update received.');});
       return;
