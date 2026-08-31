@@ -1,0 +1,64 @@
+
+/* Marathon LiveOps — Login V2 safe enhancement
+   This file is additive only. Existing styles.css remains untouched. */
+
+.login-event-card{
+  display:flex;align-items:center;gap:13px;padding:13px 14px;margin:-7px 0 20px;
+  background:linear-gradient(135deg,#f8fafc,#eef4ff);
+  border:1px solid #dfe7f2;border-radius:12px
+}
+.login-event-logo{
+  width:50px;height:50px;flex:0 0 50px;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#071525,#173553);color:#fff;
+  font:800 12px Manrope,sans-serif;overflow:hidden
+}
+.login-event-logo img,.account-logo img{width:100%;height:100%;object-fit:contain;background:#fff}
+.login-event-copy{min-width:0}
+.login-event-copy>small{
+  display:block;font-size:8px;font-weight:800;letter-spacing:.14em;color:#6c7b8d;margin-bottom:4px
+}
+.login-event-copy>strong{
+  display:block;font:800 14px/1.25 Manrope,sans-serif;color:#142130;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.login-event-meta{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:5px;color:#6b7683;font-size:9px}
+.login-event-meta span{white-space:nowrap}
+
+.login-role-chip{
+  display:inline-flex;align-items:center;gap:6px;margin-bottom:4px;padding:6px 8px;
+  border-radius:999px;font-size:8px;font-weight:800;letter-spacing:.08em
+}
+.login-modal.ops .login-role-chip{background:#edf4ff;color:#1f5de8}
+.login-modal.client .login-role-chip{background:#eaf8f0;color:#15724a}
+.login-modal.admin .login-role-chip{background:#fff5df;color:#815b17}
+
+.account-identity{
+  display:flex;align-items:center;gap:9px;padding:6px 9px;border:1px solid var(--border);
+  border-radius:10px;background:#fff;max-width:310px
+}
+.account-logo{
+  width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:8px;
+  background:linear-gradient(145deg,#071525,#173553);color:#fff;font:800 9px Manrope;overflow:hidden
+}
+.account-copy{display:grid;gap:2px;min-width:0}
+.account-copy strong{
+  max-width:205px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:800 10px Manrope;color:var(--ink,#16202a)
+}
+.account-copy small{
+  max-width:205px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:8px;color:var(--grey);text-transform:uppercase;letter-spacing:.05em
+}
+
+.login-modal.client .login-event-card{border-left:3px solid var(--green)}
+.login-modal.ops .login-event-card{border-left:3px solid var(--blue)}
+.login-modal.admin .login-event-card{border-left:3px solid var(--gold,#c8a96b)}
+
+@media(max-width:760px){
+  .login-event-card{margin-top:0}
+  .login-event-copy>strong{white-space:normal}
+  .login-event-meta{display:grid;gap:3px}
+  .account-identity{width:100%;max-width:none;order:-1}
+  .header-actions{flex-wrap:wrap;justify-content:flex-end}
+  .account-copy strong,.account-copy small{max-width:230px}
+}
