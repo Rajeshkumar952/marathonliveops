@@ -3,54 +3,155 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Marathon Project Command V1</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Marathon LiveOps</title>
+  <meta name="description" content="Live marathon operations control, proof, verification and client visibility." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260829-1" />
 </head>
 <body>
-  <div id="app"></div>
-  <script src="app.js"></script>
-<button data-view="reports" style="position:fixed;right:18px;bottom:18px;z-index:9999;padding:12px 16px;border-radius:999px;border:0;font-weight:800;cursor:pointer">📊 Reports</button>
-<section id="reportsView" class="view" data-page="reports" style="display:none;padding:24px">
- <div class="report-shell">
-  <div class="report-hero">
-   <div><div style="font-size:12px;font-weight:800;letter-spacing:.1em;opacity:.65">COMMAND CENTER · REPORTS</div>
-   <h2>Project Reports Centre</h2><p>Turn verified field execution into a clean client-ready project record.</p></div>
-   <div class="report-actions"><button class="btn secondary" onclick="window.print()">Print / Save PDF</button><button class="btn primary" onclick="alert('Client report marked ready for publishing in this V1 prototype.')">Publish Client Report</button></div>
-  </div>
-  <div class="report-grid">
-   <div class="report-card"><div class="kicker">Overall readiness</div><div class="big">84%</div><div class="report-muted">Verified project progress</div></div>
-   <div class="report-card"><div class="kicker">Verified proofs</div><div class="big">37</div><div class="report-muted">Photo + GPS records</div></div>
-   <div class="report-card"><div class="kicker">Open issues</div><div class="big">4</div><div class="report-muted">2 require attention</div></div>
-   <div class="report-card"><div class="kicker">Departments ready</div><div class="big">8/11</div><div class="report-muted">Current readiness snapshot</div></div>
-  </div>
-  <div class="report-section"><h3>Report Types</h3>
-   <div class="report-row"><div><strong>Pre-Event Readiness Report</strong><div class="report-muted">Departments, vendors, permissions, logistics and readiness before execution.</div></div><span class="report-pill">Available</span></div>
-   <div class="report-row"><div><strong>Live Execution Report</strong><div class="report-muted">Task status, GPS proofs, issues, help requests and live operational progress.</div></div><span class="report-pill">Live</span></div>
-   <div class="report-row"><div><strong>Race Day Report</strong><div class="report-muted">Race-critical readiness, course execution, medical, hydration, security and closures.</div></div><span class="report-pill">Available</span></div>
-   <div class="report-row"><div><strong>Post-Event Closure Report</strong><div class="report-muted">Dismantling, inventory return, closure proofs and pending actions.</div></div><span class="report-pill">Available</span></div>
-   <div class="report-row"><div><strong>Final Project Report</strong><div class="report-muted">Complete client-facing record from planning through closure with approved evidence.</div></div><span class="report-pill">Client Ready</span></div>
-  </div>
-  <div class="report-section"><h3>Final Report Structure</h3>
-   <div class="report-row"><span>01 · Event Overview</span><strong>Event, date, venue, distances & participant target</strong></div>
-   <div class="report-row"><span>02 · Executive Summary</span><strong>Overall readiness & delivery summary</strong></div>
-   <div class="report-row"><span>03 · Department Performance</span><strong>Expo · Venue · Race Course · Parking · Medical · Security</strong></div>
-   <div class="report-row"><span>04 · Verified Execution Proof</span><strong>Approved photos · GPS · timestamps</strong></div>
-   <div class="report-row"><span>05 · Issues & Resolution</span><strong>Client-safe resolution summary</strong></div>
-   <div class="report-row"><span>06 · Race Day Execution</span><strong>Critical operational milestones</strong></div>
-   <div class="report-row"><span>07 · Dismantling & Closure</span><strong>Post-event completion</strong></div>
-  </div>
- </div>
-</section>
+  <div id="toast" class="toast" aria-live="polite"></div>
 
+  <header class="topbar" id="publicNav">
+    <a class="brand" href="#home" aria-label="Marathon LiveOps home">
+      <span class="brand-mark">ML</span>
+      <span><strong>Marathon LiveOps</strong><small>Marathon Operations Technology</small></span>
+    </a>
+    <nav class="navlinks">
+      <a href="#home"><span>⌂</span>Home</a>
+      <a href="#how"><span>↻</span>How It Works</a>
+      <a href="#about"><span>◎</span>About Us</a>
+      <a href="#contact"><span>✉</span>Let's Connect</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn ghost" data-open-login="client">◉ Client Login</button>
+      <button class="btn primary" data-open-login="ops">▦ Ops Login</button>
+      <button class="icon-btn" title="Admin login" data-open-login="admin">⚙</button>
+    </div>
+  </header>
 
-<script>
-// Reports Centre navigation hook
-document.addEventListener('click', function(e){
- const t=e.target.closest('[data-view="reports"]'); if(!t)return;
- document.querySelectorAll('.view').forEach(el=>el.style.display='none');
- const r=document.getElementById('reportsView'); if(r){r.style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
-});
-</script>
+  <main id="publicSite">
+    <section class="hero" id="home">
+      <div class="hero-bg"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="eyebrow">MARATHON OPERATIONS TECHNOLOGY</div>
+        <h1>From Ground Execution<br><span>to Live Control.</span></h1>
+        <p>A command layer for marathon execution — connecting ground teams, verified proof, management control and client visibility in real time.</p>
+        <div class="hero-points">
+          <span>Live infrastructure</span><span>Verified ground proof</span><span>Controlled visibility</span>
+        </div>
+        <div class="hero-cta">
+          <button class="btn primary large" data-open-login="ops">Ops Team Login</button>
+          <button class="btn light large" data-open-login="client">Client Access</button>
+        </div>
+      </div>
+      <div class="hero-strip">
+        <article><b>FIELD UPDATE</b><small>Ground team reports in seconds</small></article>
+        <article><b>PROOF</b><small>Photo, time, location & remarks</small></article>
+        <article><b>CONTROL</b><small>Admin verifies before client visibility</small></article>
+      </div>
+    </section>
 
+    <section class="section how" id="how">
+      <div class="section-head">
+        <span class="eyebrow dark">HOW WE WORK DIFFERENTLY</span>
+        <h2>Digital operations. Proof-backed execution.</h2>
+        <p>Built around the way a real marathon operations team plans, assigns, executes, proves and closes work.</p>
+      </div>
+      <div class="pillar-grid">
+        <article class="pillar"><div class="line-icon">▦</div><h3>Digital-First Operations</h3><b>Plan. Assign. Track. Update.</b><p>Structured workflows replace scattered calls, sheets and message chains.</p></article>
+        <article class="pillar"><div class="line-icon">▧</div><h3>Proof-Based Execution</h3><b>Don’t just mark it done. Prove it.</b><p>Photos, timestamps, remarks and verification build an auditable execution record.</p></article>
+        <article class="pillar"><div class="line-icon">◉</div><h3>Live Operational Visibility</h3><b>Ground updates. Management sees.</b><p>Progress, delays and blockers reach the right person without status-chasing.</p></article>
+        <article class="pillar"><div class="line-icon">✓</div><h3>Accountability at Every Level</h3><b>Every task has an owner.</b><p>Task → Location → Owner → Deadline → Status → Proof → Verification.</p></article>
+      </div>
+      <div class="ops-gallery">
+        <div class="gallery-card g1"><span>Hydration & route support</span></div>
+        <div class="gallery-card g2"><span>Ground execution</span></div>
+        <div class="gallery-card g3"><span>Race-course control</span></div>
+      </div>
+    </section>
+
+    <section class="section about" id="about">
+      <div class="about-copy">
+        <span class="eyebrow dark">ABOUT MARATHON LIVEOPS</span>
+        <h2>Built from real marathon operations. Designed for real-time execution.</h2>
+        <p>Marathon LiveOps connects project planning, ground teams, proof, verification, management control and client visibility in one operational platform.</p>
+        <div class="metric-note">Add only verified company metrics before production launch.</div>
+      </div>
+      <div class="metric-grid">
+        <div><strong>XX+</strong><span>Years of Operations Experience</span></div>
+        <div><strong>XX+</strong><span>Marathon / Running Events</span></div>
+        <div><strong>XX+</strong><span>Projects Executed</span></div>
+        <div><strong>XX+</strong><span>Cities / Locations</span></div>
+        <div><strong>XXK+</strong><span>Participants Supported</span></div>
+        <div><strong>XX+</strong><span>Departments Managed</span></div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="contact-card company-card">
+        <span class="eyebrow dark">LET'S CONNECT</span>
+        <h2>Marathon LiveOps</h2>
+        <h4>A unit of Utsara Sports Pvt Ltd.</h4>
+        <div class="contact-list">
+          <p><b>Office</b><br>Park Centre, 8th Floor, Celica Park 24, Park Street, Kolkata – 700016</p>
+          <p><b>Phone</b><br>+91 95237 60856</p>
+          <p><b>Email</b><br>Rajeshkumar9523rama@gmail.com</p>
+        </div>
+      </div>
+      <form class="contact-card form-card" id="contactForm">
+        <h3>CONTACT US</h3>
+        <label>Name<input required name="name" placeholder="Your name"></label>
+        <label>Contact<input required name="contact" placeholder="Phone number"></label>
+        <label>Email<input required type="email" name="email" placeholder="Email address"></label>
+        <label>Message<textarea required name="message" rows="4" placeholder="Short message"></textarea></label>
+        <button class="btn primary" type="submit">Send Enquiry</button>
+      </form>
+    </section>
+  </main>
+
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar" id="sidebar"></aside>
+    <section class="workspace">
+      <header class="app-header">
+        <div><h2 id="pageTitle">Dashboard</h2><p id="pageSubtitle"></p></div>
+        <div class="header-actions"><span class="live-pill">● LIVE</span><button class="btn ghost" id="logoutBtn">Log out</button></div>
+      </header>
+      <div id="appContent" class="app-content"></div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop hidden" id="loginModal">
+    <div class="login-modal" id="loginCard">
+      <button class="modal-close" id="closeLogin">×</button>
+      <div class="login-photo"></div>
+      <div class="login-pane">
+        <span class="eyebrow dark" id="loginAccess">OPS ACCESS</span>
+        <h2 id="loginTitle">Your ground. Your tasks. Your updates.</h2>
+        <p id="loginHelp">Authorised operations personnel only.</p>
+        <form id="loginForm">
+          <input type="hidden" id="loginRole" value="ops">
+          <label>User ID<input id="loginUser" autocomplete="username" required></label>
+          <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+          <button class="btn primary full" type="submit">Login</button>
+        </form>
+        <div class="demo-credentials" id="demoCredentials"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div><strong>Marathon LiveOps</strong><span>Marathon Operations Technology</span></div>
+    <div>© 2026 Utsara Sports Pvt. Ltd. All Rights Reserved.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=20260829-1"></script>
+  <script src="cloud.js?v=20260829-1"></script>
+  <script src="resilience.js?v=20260829-1"></script>
+  <script src="app.js?v=20260829-1"></script>
+  <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js?v=20260829-1",{updateViaCache:"none"}).then(r=>r.update()).catch(console.warn));}</script>
 </body>
 </html>
