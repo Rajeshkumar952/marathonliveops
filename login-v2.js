@@ -139,3 +139,57 @@
     }).observe(shell,{attributes:true,attributeFilter:['class']});
   }
 })();
+
+
+
+/* Local downloaded-folder demo login.
+   Only active on file:// and completely independent of cloud/localStorage users. */
+(function(){
+  if(location.protocol !== 'file:') return;
+
+  const form=document.querySelector('#loginForm');
+  const roleEl=document.querySelector('#loginRole');
+  const userEl=document.querySelector('#loginUser');
+  const passEl=document.querySelector('#loginPassword');
+  const demo=document.querySelector('#demoCredentials');
+
+  const demoUsers={
+    admin:{id:'admin',password:'admin123',role:'admin',name:'Project Admin'},
+    ops:{id:'ops',password:'ops123',role:'ops',name:'Rahul S.',department:'Race Course',zone:'Zone 03'},
+    client:{id:'client',password:'client123',role:'client',name:'Client User'}
+  };
+
+  function currentUser(){
+    return demoUsers[roleEl?.value || 'ops'] || demoUsers.ops;
+  }
+
+  function fillDemo(){
+    const u=currentUser();
+    if(userEl) userEl.value=u.id;
+    if(passEl) passEl.value=u.password;
+    if(demo){
+      demo.classList.remove('hidden');
+      demo.innerHTML=`Local test login: <b>${u.id} / ${u.password}</b>`;
+    }
+  }
+
+  document.querySelectorAll('[data-open-login]').forEach(btn=>{
+    btn.addEventListener('click',()=>setTimeout(fillDemo,0));
+  });
+
+  if(form){
+    form.addEventListener('submit',function(e){
+      const expected=currentUser();
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      if((userEl?.value||'').trim()!==expected.id || (passEl?.value||'')!==expected.password){
+        if(typeof toast==='function') toast('Incorrect User ID or password.');
+        return false;
+      }
+
+      if(typeof launch==='function') launch({...expected});
+      return false;
+    },true);
+  }
+})();
