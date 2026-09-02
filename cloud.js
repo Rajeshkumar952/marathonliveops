@@ -90,5 +90,32 @@
     if(error) throw error;
   }
 
-  window.LiveOpsCloud = {isConfigured:()=>!!client, signIn, signOut, loadState, saveState, subscribe, uploadProof, submitEnquiry, sanitizeClientState};
+  async function manageAccess(action,payload={}){
+    if(!client || !cfg.projectId) throw new Error('Live backend is not configured.');
+    const {data,error}=await client.functions.invoke('manage-access',{
+      body:{action,projectId:cfg.projectId,...payload}
+    });
+    if(error){
+      let msg=error.message||'Access request failed.';
+      try{
+        const ctx=error.context;
+        if(ctx && typeof ctx.json==='function'){
+          const body=await ctx.json();
+          if(body?.error) msg=body.error;
+        }
+      }catch(_){ }
+      throw new Error(msg);
+    }
+    if(data?.error) throw new Error(data.error);
+    return data;
+  }
+
+  const createAccess=(account)=>manageAccess('create',{account});
+  const listAccess=()=>manageAccess('list');
+  const updateAccess=(account)=>manageAccess('update',{account});
+  const setAccessActive=(userId,isActive)=>manageAccess('set-active',{userId,isActive});
+  const resetAccessPassword=(userId,password)=>manageAccess('reset-password',{userId,password});
+  const deleteAccess=(userId)=>manageAccess('delete',{userId});
+
+  window.LiveOpsCloud = {isConfigured:()=>!!client, signIn, signOut, loadState, saveState, subscribe, uploadProof, submitEnquiry, sanitizeClientState, createAccess, listAccess, updateAccess, setAccessActive, resetAccessPassword, deleteAccess};
 })();

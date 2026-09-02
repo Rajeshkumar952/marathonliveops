@@ -128,7 +128,7 @@ const pages={
  dashboard(){setHead('Command Centre',`${state.project.name} • ${state.project.eventDay}`);const completed=state.tasks.filter(t=>t.verified).length,working=state.tasks.filter(t=>/working|started/i.test(t.status)).length,blocked=state.tasks.filter(t=>/blocked|unable/i.test(t.status)).length,pending=state.tasks.filter(t=>t.status==='Finished'&&!t.verified).length;$('#appContent').innerHTML=`<div class="kpi-grid">${stat('PROJECT READY',state.project.readiness+'%')}${stat('VERIFIED',completed,'green')}${stat('WORKING',working,'blue')}${stat('DELAYED',state.issues.length,'amber')}${stat('BLOCKED',blocked,'red')}${stat('PROOF PENDING',pending,'amber')}</div><div class="panel-grid"><div class="panel"><h3>ATTENTION REQUIRED</h3>${state.issues.map(i=>`<div class="attention-row"><span class="status ${statusClass(i.severity)}">${i.severity}</span><b>${esc(i.title)}</b><span>${i.task}</span><span>${i.time}</span></div>`).join('')||'<p>No open issues.</p>'}<div class="attention-row"><span class="status amber">Proof Pending</span><b>Finish Gate Branding</b><span>Venue</span><span>04:08 AM</span></div></div><div class="panel"><h3>QUICK ACTIONS</h3><div class="action-grid">${quickBtn('+ Create Task','create-task')}${quickBtn('+ Add Team','add-team')}${quickBtn('↻ Request Update','request-update')}${quickBtn('▣ Broadcast','broadcast')}${quickBtn('✉ Open Chat','open-chat')}</div></div></div><div class="panel" style="margin-top:16px"><h3>DEPARTMENT READINESS</h3>${deptCards()}</div>`;bindQuick()},
  projects(){setHead('Projects','Project phases, departments and locations.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="newProject">+ Create Project</button><button class="btn ghost" id="editProject">Edit Current Project</button></div><div class="panel"><h3>${esc(state.project.name)}</h3><p>Readiness: <b>${state.project.readiness}%</b> • ${esc(state.project.eventDay)} • Last update ${esc(state.project.lastUpdate)}</p><div class="bar"><i style="width:${state.project.readiness}%"></i></div></div><div class="panel" style="margin-top:16px"><h3>PHASE / DEPARTMENT SETUP</h3>${deptCards()}</div>`;$('#newProject').onclick=()=>toast('Project creation is not enabled in this build yet.');$('#editProject').onclick=()=>{const n=prompt('Project name',state.project.name);if(n){state.project.name=n;save();pages.projects()}}},
  tasks(){setHead('Tasks','Create, configure, assign, escalate and close work.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="createTask">+ Create Task</button><button class="btn ghost" id="exportTasks">Export CSV</button></div><div class="data-table"><div class="data-head"><span>Task</span><span>Priority</span><span>Department</span><span>Assigned</span><span>Status</span><span>Action</span></div>${state.tasks.map(t=>`<div class="data-row"><b>${esc(t.name)}<br><small>${t.id}</small></b><span>${t.priority}</span><span>${t.department}</span><span>${t.assignedTo}</span><span class="status ${statusClass(t.status)}">${t.status}</span><button data-edit-task="${t.id}">Edit</button></div>`).join('')}</div>`;$('#createTask').onclick=renderTaskForm;$('#exportTasks').onclick=exportTasksCSV;$$('[data-edit-task]').forEach(b=>b.onclick=()=>renderTaskForm(b.dataset.editTask))},
- team(){setHead('Team & Access','Control user, role, department, zone and permissions.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="addMember">+ Add Member</button></div><div class="data-table"><div class="data-head"><span>Name</span><span>Role</span><span>Department</span><span>Zone</span><span>Access</span><span>Status</span></div>${state.team.map(x=>`<div class="data-row"><b>${esc(x.name)}</b><span>${esc(x.role)}</span><span>${esc(x.department)}</span><span>${esc(x.zone)}</span><span>${esc(x.access)}</span><span class="status green">${esc(x.status)}</span></div>`).join('')}</div>`;$('#addMember').onclick=renderAddTeam},
+ team(){setHead('Team & Access','Create and manage Admin, Ops Team and Client website access.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="addMember">+ Create Access</button><button class="btn ghost" id="viewAccessList">Access List</button></div><div class="panel"><h3>ACCESS MANAGEMENT</h3><p>Create role-based website login access. Ops Team accounts can be limited by Department, Role and Zone. Client accounts receive full event visibility.</p></div>`;$('#addMember').onclick=renderAddTeam;$('#viewAccessList').onclick=openAccessList},
  fields(){setHead('Form & Field Control','Admin decides exactly what information Ops must submit.');renderFieldBuilder()},
  proof(){setHead('Proof Verification','Approve, reject or request rework before client visibility.');renderProofs()},
  issues(){setHead('Issues & Blockers','Problems should find Admin automatically.');$('#appContent').innerHTML=`<div class="data-table"><div class="data-head"><span>Issue</span><span>Severity</span><span>Task</span><span>Status</span><span>Time</span><span>Action</span></div>${state.issues.map(i=>`<div class="data-row"><b>${esc(i.title)}</b><span class="status ${statusClass(i.severity)}">${i.severity}</span><span>${i.task}</span><span>${i.status}</span><span>${i.time}</span><button data-resolve="${i.id}">Resolve</button></div>`).join('')}</div>`;$$('[data-resolve]').forEach(b=>b.onclick=()=>{state.issues=state.issues.filter(i=>i.id!==b.dataset.resolve);save();pages.issues();toast('Issue resolved.');})},
@@ -180,7 +180,124 @@ function renderOpsProof(t){session.selectedTask=t.id;$('#appContent').innerHTML=
 function proofTile(t,i){const p=t.proofs[i];return `<button class="upload-tile" data-proof-slot="${i}">${p?`<img src="${p.data}" alt="Proof ${i+1}">${p.syncPending?'<em class="proof-sync">Queued</em>':''}`:`<span>＋<br>Photo ${i+1}</span>`}</button>`}
 function renderOpsIssue(t){$('#appContent').innerHTML=`<div class="ops-home"><form class="panel" id="issueForm"><h3>${esc(t.name)}</h3><div class="form-group"><label>Issue Type</label><select name="type"><option>Material Not Reached</option><option>Manpower Shortage</option><option>Vehicle Delay</option><option>Permission Issue</option><option>Safety Issue</option><option>Other</option></select></div><div class="form-group"><label>Severity</label><select name="severity"><option>High</option><option>Medium</option><option>Low</option><option>Critical</option></select></div><div class="form-group"><label>Remark</label><textarea required name="remark" rows="4"></textarea></div><button class="btn primary full" type="submit" style="background:var(--red)">Send to Admin</button></form></div>`;$('#issueForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);state.issues.unshift({id:'IS-'+Date.now(),task:t.id,title:f.get('remark'),severity:f.get('severity'),status:'Open',time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})});t.issue=f.get('type');if(/critical|high/i.test(f.get('severity')))t.status='Blocked';save();toast('Issue sent to Admin.');navigate('ops-home')}}
 function renderTaskForm(id){const t=id?state.tasks.find(x=>x.id===id):null;setHead(t?'Edit Task':'Create / Configure Task','Admin decides what Ops must do, submit and prove.');$('#appContent').innerHTML=`<div class="panel-grid"><form class="panel" id="taskForm"><h3>${t?'EDIT TASK':'NEW TASK'}</h3><div class="form-grid"><div class="form-group span2"><label>Task Name</label><input required name="name" value="${esc(t?.name||'')}"></div><div class="form-group"><label>Phase</label><select name="phase"><option>Expo</option><option>Venue</option><option>Race Course</option><option>Dismantling</option></select></div><div class="form-group"><label>Department</label><select name="department">${state.departments.map(d=>`<option ${d.name===t?.department?'selected':''}>${d.name}</option>`).join('')}</select></div><div class="form-group"><label>Zone / Location</label><input name="zone" value="${esc(t?.zone||'')}"></div><div class="form-group"><label>Assigned To</label><select name="assignedTo">${state.users.filter(u=>u.role==='ops').map(u=>`<option value="${u.id}" ${u.id===t?.assignedTo?'selected':''}>${esc(u.name)}</option>`).join('')}</select></div><div class="form-group"><label>Priority</label><select name="priority"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div><div class="form-group"><label>Deadline</label><input name="deadline" type="time"></div><div class="form-group"><label>Minimum Photos</label><input name="proofMin" type="number" min="0" value="${t?.proofMin??3}"></div><div class="form-group"><label>Client Visibility</label><select name="clientVisibility"><option>Hidden</option><option>Status Only</option><option>Status + Approved Proof</option><option>Full Update</option></select></div><div class="form-group span2"><label>Instruction</label><textarea name="instruction" rows="3">${esc(t?.instruction||'')}</textarea></div></div><button class="btn primary" type="submit" style="margin-top:14px">Save & Assign</button></form><div class="panel"><h3>TASK RULES</h3>${['Proof mandatory','Admin verification','Ops can edit','Escalate if overdue','Allow reopen'].map(x=>`<div class="switch-line"><span>${x}</span><span class="switch on">ON</span></div>`).join('')}<p style="margin-top:18px"><b>Completion Flow</b><br><br>ASSIGN → EXECUTE → PROVE → VERIFY → CLOSE</p></div></div>`;$('#taskForm').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));if(t){Object.assign(t,f,{proofMin:Number(f.proofMin)});}else{state.tasks.unshift({id:'TS-'+Date.now().toString().slice(-5),...f,proofMin:Number(f.proofMin),status:'Not Started',progress:0,verification:true,proofs:[],remark:'',issue:'',verified:false,fields:structuredClone(seed.tasks[0].fields)})}save();toast('Task saved and assigned.');navigate('tasks')}}
-function renderAddTeam(){setHead('Add Team Member','Create access and assign role / department / zone.');$('#appContent').innerHTML=`<form class="panel" id="teamForm"><div class="form-grid"><div class="form-group"><label>Name</label><input required name="name"></div><div class="form-group"><label>User ID</label><input required name="userId"></div><div class="form-group"><label>Password</label><input required name="password" value="welcome123"></div><div class="form-group"><label>Role</label><select name="role"><option>Supervisor</option><option>Coordinator</option><option>Lead</option><option>Verifier</option></select></div><div class="form-group"><label>Department</label><select name="department">${state.departments.map(d=>`<option>${d.name}</option>`).join('')}</select></div><div class="form-group"><label>Zone</label><input name="zone" value="Assigned Area"></div><div class="form-group"><label>Access</label><select name="access"><option>Assigned Only</option><option>Department</option><option>Proof Only</option></select></div></div><button class="btn primary" type="submit" style="margin-top:14px">Create Ops Access</button></form>`;$('#teamForm').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));state.team.push({...f,status:'Active'});state.users.push({id:f.userId,password:f.password,role:'ops',name:f.name,department:f.department,zone:f.zone});save();toast('Team member access created.');navigate('team')}}
+function renderAddTeam(){
+  setHead('Create Access','Create secure website login access for Admin, Ops Team or Client.');
+  const departments=state.departments.map(d=>`<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');
+  $('#appContent').innerHTML=`
+    <div class="page-actions access-top-actions">
+      <button class="btn ghost" id="accessBack">← Back</button>
+      <button class="btn ghost" id="accessListBtn">Access List</button>
+    </div>
+    <form class="panel" id="teamForm">
+      <div class="form-grid">
+        <div class="form-group"><label>Full Name</label><input required name="name" autocomplete="name"></div>
+        <div class="form-group"><label>User ID</label><input required name="userId" autocomplete="username" placeholder="e.g. Amit123"></div>
+        <div class="form-group"><label>Password</label><input required name="password" type="password" minlength="6" autocomplete="new-password" placeholder="Minimum 6 characters"></div>
+        <div class="form-group"><label>Access To</label><select required name="accessTo" id="accessTo"><option value="ops">Ops Team</option><option value="client">Client</option><option value="admin">Admin</option></select></div>
+      </div>
+      <div id="opsAccessFields" class="form-grid ops-access-fields">
+        <div class="form-group"><label>Department</label><select name="department">${departments}</select></div>
+        <div class="form-group"><label>Role</label><select name="opsRole"><option>Supervisor</option><option>Coordinator</option><option>Lead</option><option>Verifier</option><option>Team Member</option></select></div>
+        <div class="form-group"><label>Zone</label><input name="zone" placeholder="Assigned Area"></div>
+      </div>
+      <div id="clientAccessNote" class="access-note hidden"><b>Client Access:</b> Full approved event visibility. Department, Role and Zone restrictions are not required.</div>
+      <div id="adminAccessNote" class="access-note hidden"><b>Admin Access:</b> Command Center management access for this event.</div>
+      <button class="btn primary" id="createAccessBtn" type="submit" style="margin-top:14px">Create Access</button>
+    </form>`;
+  const form=$('#teamForm'), accessTo=$('#accessTo'), opsFields=$('#opsAccessFields'), clientNote=$('#clientAccessNote'), adminNote=$('#adminAccessNote');
+  function syncAccessFields(){
+    const v=accessTo.value;
+    opsFields.classList.toggle('hidden',v!=='ops');
+    clientNote.classList.toggle('hidden',v!=='client');
+    adminNote.classList.toggle('hidden',v!=='admin');
+    $$('select,input',opsFields).forEach(el=>el.disabled=v!=='ops');
+  }
+  accessTo.onchange=syncAccessFields; syncAccessFields();
+  $('#accessBack').onclick=()=>navigate('team');
+  $('#accessListBtn').onclick=openAccessList;
+  form.onsubmit=async e=>{
+    e.preventDefault();
+    const btn=$('#createAccessBtn');
+    const f=Object.fromEntries(new FormData(form));
+    const account={
+      name:String(f.name||'').trim(),userId:String(f.userId||'').trim(),password:String(f.password||''),accessTo:f.accessTo,
+      department:f.accessTo==='ops'?(f.department||''):'',opsRole:f.accessTo==='ops'?(f.opsRole||''):'',zone:f.accessTo==='ops'?(f.zone||''):'',isActive:true
+    };
+    if(!/^[A-Za-z0-9._-]{3,40}$/.test(account.userId)) return toast('User ID: use 3–40 letters, numbers, dot, underscore or hyphen.');
+    if(account.password.length<6) return toast('Password must be at least 6 characters.');
+    btn.disabled=true;btn.textContent='Creating…';
+    try{
+      if(window.LiveOpsCloud?.isConfigured()){
+        await window.LiveOpsCloud.createAccess(account);
+      }else{
+        if(state.users.some(x=>x.id.toLowerCase()===account.userId.toLowerCase())) throw new Error('This User ID already exists.');
+        state.users.push({id:account.userId,password:account.password,role:account.accessTo,name:account.name,department:account.department,zone:account.zone});
+      }
+      if(account.accessTo==='ops'){
+        const existing=state.team.find(x=>String(x.userId).toLowerCase()===account.userId.toLowerCase());
+        const row={name:account.name,userId:account.userId,role:account.opsRole,department:account.department,zone:account.zone,access:'Assigned by role',status:'Active'};
+        existing?Object.assign(existing,row):state.team.push(row);
+      }
+      localStorage.setItem(STORE,JSON.stringify(state));
+      toast('Access created successfully.');
+      form.reset();accessTo.value='ops';syncAccessFields();
+    }catch(err){console.error('CREATE ACCESS ERROR:',err);toast(err?.message||'Could not create access.');}
+    finally{btn.disabled=false;btn.textContent='Create Access';}
+  };
+}
+
+function demoAccessList(){
+  return (state.users||[]).map(u=>{
+    const tm=(state.team||[]).find(t=>String(t.userId).toLowerCase()===String(u.id).toLowerCase());
+    return {userId:u.id,name:u.name||u.id,accessTo:u.role,department:u.role==='ops'?(tm?.department||u.department||''):'',opsRole:u.role==='ops'?(tm?.role||''):'',zone:u.role==='ops'?(tm?.zone||u.zone||''):'',isActive:tm?.status!=='Disabled'};
+  });
+}
+
+async function openAccessList(){
+  let rows=[];
+  try{
+    rows=window.LiveOpsCloud?.isConfigured()?((await window.LiveOpsCloud.listAccess())?.accounts||[]):demoAccessList();
+  }catch(err){console.error(err);return toast(err?.message||'Could not load access list.');}
+  document.getElementById('accessListModal')?.remove();
+  const overlay=document.createElement('div');overlay.className='access-modal-overlay';overlay.id='accessListModal';
+  overlay.innerHTML=`<div class="access-modal-card"><div class="access-modal-head"><div><h2>Access List</h2><p>${rows.length} account${rows.length===1?'':'s'} for this event</p></div><button class="access-modal-close" aria-label="Close">×</button></div><div class="access-table-wrap"><table class="access-table"><thead><tr><th>Full Name</th><th>User ID</th><th>Access To</th><th>Department</th><th>Role</th><th>Zone</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows.map(accessRowHtml).join('')||'<tr><td colspan="8" class="access-empty">No access has been created yet.</td></tr>'}</tbody></table></div></div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.access-modal-close').onclick=()=>overlay.remove();
+  overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+  $$('[data-access-action]',overlay).forEach(b=>b.onclick=()=>handleAccessAction(b.dataset.accessAction,b.dataset.userId,b,overlay));
+}
+
+function accessRowHtml(a){
+  const type={ops:'Ops Team',client:'Client',admin:'Admin'}[a.accessTo||a.role]||a.accessTo||a.role||'—';
+  const active=a.isActive!==false;
+  return `<tr data-access-user="${esc(a.userId)}"><td><b>${esc(a.name||'—')}</b></td><td>${esc(a.userId)}</td><td>${esc(type)}</td><td>${esc(a.department||'—')}</td><td>${esc(a.opsRole||'—')}</td><td>${esc(a.zone||'—')}</td><td><span class="status ${active?'green':'red'}">${active?'Active':'Disabled'}</span></td><td><div class="access-actions"><button data-access-action="toggle" data-user-id="${esc(a.userId)}">${active?'Disable':'Enable'}</button><button data-access-action="password" data-user-id="${esc(a.userId)}">Reset Password</button><button class="danger" data-access-action="delete" data-user-id="${esc(a.userId)}">Delete</button></div></td></tr>`;
+}
+
+async function handleAccessAction(action,userId,button,overlay){
+  try{
+    if(action==='toggle'){
+      const isEnabling=button.textContent.trim()==='Enable';
+      if(window.LiveOpsCloud?.isConfigured()) await window.LiveOpsCloud.setAccessActive(userId,isEnabling);
+      else{
+        const tm=state.team.find(x=>String(x.userId).toLowerCase()===userId.toLowerCase());if(tm)tm.status=isEnabling?'Active':'Disabled';
+      }
+      overlay.remove();toast(isEnabling?'Access enabled.':'Access disabled.');openAccessList();return;
+    }
+    if(action==='password'){
+      const pw=prompt('Enter a new password (minimum 6 characters):');if(pw===null)return;if(pw.length<6)return toast('Password must be at least 6 characters.');
+      if(window.LiveOpsCloud?.isConfigured()) await window.LiveOpsCloud.resetAccessPassword(userId,pw);
+      else{const u=state.users.find(x=>x.id===userId);if(u)u.password=pw;localStorage.setItem(STORE,JSON.stringify(state));}
+      toast('Password reset successfully.');return;
+    }
+    if(action==='delete'){
+      if(!confirm(`Delete access for ${userId}? This user will no longer be able to log in.`))return;
+      if(window.LiveOpsCloud?.isConfigured()) await window.LiveOpsCloud.deleteAccess(userId);
+      else{state.users=state.users.filter(x=>x.id!==userId);state.team=state.team.filter(x=>x.userId!==userId);localStorage.setItem(STORE,JSON.stringify(state));}
+      overlay.remove();toast('Access deleted.');openAccessList();
+    }
+  }catch(err){console.error(err);toast(err?.message||'Access action failed.');}
+}
+
 let builderFields=structuredClone(seed.tasks[0].fields);
 function renderFieldBuilder(){ $('#appContent').innerHTML=`<div class="field-builder"><div class="panel"><h3>ADD FIELD</h3><div class="field-palette">${[['text','T  Text'],['number','123  Number'],['dropdown','⌄  Dropdown'],['multiselect','☑  Multi-select'],['yesno','◉  Yes / No'],['datetime','◷  Date & Time'],['location','⌖  Location'],['photo','▧  Photo'],['video','▶  Video'],['file','▤  File'],['remark','≡  Remark']].map(x=>`<button data-add-field="${x[0]}">${x[1]}</button>`).join('')}</div></div><div class="panel"><h3>REQUIRED INFORMATION TEMPLATE</h3><div class="field-list">${builderFields.map((f,i)=>fieldRow(f,i)).join('')}</div><div class="page-actions" style="margin-top:14px"><button class="btn primary" id="saveTemplate">Save Template</button><button class="btn ghost" id="applyTemplate">Apply to Selected Ops Task</button></div></div></div>`;$$('[data-add-field]').forEach(b=>b.onclick=()=>{builderFields.push({label:'New Field',type:b.dataset.addField,required:false,opsEdit:true,client:'No',options:b.dataset.addField==='dropdown'?['Option 1','Option 2']:[]});renderFieldBuilder()});$$('[data-field-index]').forEach(r=>{const i=Number(r.dataset.fieldIndex);r.querySelector('[name=label]').oninput=e=>builderFields[i].label=e.target.value;r.querySelector('[name=required]').onchange=e=>builderFields[i].required=e.target.value==='Yes';r.querySelector('[name=opsEdit]').onchange=e=>builderFields[i].opsEdit=e.target.value==='Yes';r.querySelector('[name=client]').onchange=e=>builderFields[i].client=e.target.value;r.querySelector('[data-remove-field]').onclick=()=>{builderFields.splice(i,1);renderFieldBuilder()}});$('#saveTemplate').onclick=()=>{localStorage.setItem(STORE+'-template',JSON.stringify(builderFields));toast('Field template saved.');};$('#applyTemplate').onclick=()=>{const id=prompt('Enter Task ID to apply this template (example RC-118):','RC-118');const t=state.tasks.find(x=>x.id===id);if(!t)return toast('Task not found.');t.fields=structuredClone(builderFields);save();toast('Field template applied to '+id);}}
 function fieldRow(f,i){return `<div class="field-row" data-field-index="${i}"><input name="label" value="${esc(f.label)}"><span>${esc(f.type)}</span><select name="required"><option ${f.required?'selected':''}>Yes</option><option ${!f.required?'selected':''}>No</option></select><select name="opsEdit"><option ${f.opsEdit?'selected':''}>Yes</option><option ${!f.opsEdit?'selected':''}>No</option></select><select name="client"><option>${esc(f.client||'No')}</option><option>No</option><option>Yes</option><option>Status</option><option>Approved</option></select><button data-remove-field>×</button></div>`}
