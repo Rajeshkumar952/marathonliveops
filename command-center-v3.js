@@ -65,6 +65,7 @@
     if(typeof pages==='undefined') return;
 
     pages.dashboard=function(){
+      if(!hasProject()){setHead('Command Centre','');q('#appContent').innerHTML=noProjectHtml();return;}
       setHead('Live Project Control',state.project.name+' • '+state.project.eventDay);
       const pending=state.tasks.filter(t=>t.status==='Finished'&&!t.verified);
       const active=state.tasks.filter(t=>/working|started/i.test(t.status));
@@ -96,24 +97,30 @@
     };
 
     pages.projects=function(){
-      setHead('Projects','Create, configure, draft, publish and manage the complete event project.');
+      setHead('Projects','Create and manage the active event project.');
+      if(!hasProject()){
+        q('#appContent').innerHTML=
+          '<div class="page-actions"><button class="btn primary" id="ccCreateProject">+ Create Project</button></div>'+
+          noProjectHtml();
+        q('#ccCreateProject').onclick=()=>createProjectSetup(false);
+        return;
+      }
       q('#appContent').innerHTML=
-        '<div class="page-actions"><button class="btn primary" id="ccCreateProject">+ Create Project</button><button class="btn ghost" id="ccEditProject">Edit Project</button><button class="btn ghost" id="ccSaveDraft">Save Draft</button></div>'+
-        '<div class="panel"><h3>'+esc(state.project.name)+'</h3><p>Readiness: <b>'+state.project.readiness+'%</b> • '+esc(state.project.eventDay)+' • Last update '+esc(state.project.lastUpdate)+'</p><div class="bar"><i style="width:'+state.project.readiness+'%"></i></div></div>'+
+        '<div class="page-actions"><button class="btn ghost" id="ccEditProject">Edit Project</button></div>'+
+        '<div class="panel"><h3>'+esc(state.project.name)+'</h3><p>'+
+          (state.project.location?esc(state.project.location)+' • ':'')+
+          (state.project.eventDay?esc(state.project.eventDay)+' • ':'')+
+          'Readiness: <b>'+(state.project.readiness||0)+'%</b></p>'+
+          '<div class="bar"><i style="width:'+(state.project.readiness||0)+'%"></i></div></div>'+
         '<div class="cc-project-actions">'+
           '<button class="cc-project-tool" data-tool="tasks"><b>✓ Tasks</b><small>Create, assign, prioritize and close work.</small></button>'+
           '<button class="cc-project-tool" data-tool="fields"><b>＋ Forms & Fields</b><small>Define exactly what Ops must submit.</small></button>'+
           '<button class="cc-project-tool" data-tool="vendors"><b>▤ Vendors & Logistics</b><small>Vendor, vehicle, driver, material and ETA setup.</small></button>'+
           '<button class="cc-project-tool" data-tool="proof"><b>▧ Proof Rules</b><small>Photo count, verification and evidence controls.</small></button>'+
           '<button class="cc-project-tool" data-tool="client-control"><b>◉ Client Visibility</b><small>Choose what the client is allowed to see.</small></button>'+
-          '<button class="cc-project-tool" id="ccPublish"><b>● Publish Project</b><small>Mark the configured project ready for live execution.</small></button>'+
         '</div>';
-
       qa('[data-tool]').forEach(b=>b.onclick=()=>navigate(b.dataset.tool));
-      q('#ccSaveDraft').onclick=()=>toast('Project saved as draft.');
-      q('#ccCreateProject').onclick=()=>toast('Create Project setup will open here.');
-      q('#ccEditProject').onclick=()=>toast('Project editing will open here.');
-      q('#ccPublish').onclick=()=>toast('Project published for live execution.');
+      q('#ccEditProject').onclick=()=>createProjectSetup(true);
     };
 
     pages['access-control']=function(){

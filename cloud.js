@@ -24,18 +24,31 @@
 
   async function signIn(userId, password){
     if(!client) return {demo:true};
-    // Production convention: each LiveOps User ID maps to a private auth alias.
-    // Accounts are provisioned by Admin through the secure server-side function.
+
     const rawId=String(userId).trim().toLowerCase();
-    const email = rawId.includes('@') ? rawId : `${rawId}@users.marathonliveops.in`;
+    const email = rawId.includes('@')
+      ? rawId
+      : `${rawId}@users.marathonliveops.in`;
+
     const {data,error} = await client.auth.signInWithPassword({email,password});
     if(error) throw error;
-    const {data:profile,error:pErr} = await client.from('profiles').select('*').eq('id',data.user.id).single();
+
+    const {data:profile,error:pErr} = await client
+      .from('profiles')
+      .select('*')
+      .eq('id',data.user.id)
+      .maybeSingle();
     if(pErr) throw pErr;
-    const {data:membership,error:mErr} = await client.from('project_memberships')
-      .select('role,department,zone,is_active').eq('project_id',cfg.projectId).eq('user_id',data.user.id).single();
+
+    const {data:membership,error:mErr} = await client
+      .from('project_memberships')
+      .select('*')
+      .eq('project_id',cfg.projectId)
+      .eq('user_id',data.user.id)
+      .maybeSingle();
     if(mErr) throw mErr;
     if(!membership?.is_active) throw new Error('Project access is inactive');
+
     return {user:data.user,profile,membership};
   }
 
@@ -90,5 +103,41 @@
     if(error) throw error;
   }
 
-  window.LiveOpsCloud = {isConfigured:()=>!!client, signIn, signOut, loadState, saveState, subscribe, uploadProof, submitEnquiry, sanitizeClientState};
+  async function manageAccess(action,payload={}){
+    if(!client || !cfg.projectId) throw new Error('Live backend is not configured.');
+
+    const {data:sessionData,error:sessionError}=await client.auth.getSession();
+    if(sessionError) throw sessionError;
+    const accessToken=sessionData?.session?.access_token;
+    if(!accessToken) throw new Error('Sign in to Command Center again before managing access.');
+
+    const {data,error}=await client.functions.invoke('manage-access',{
+      body:{action,projectId:cfg.projectId,...payload},
+      headers:{Authorization:`Bearer ${accessToken}`}
+    });
+
+    if(error){
+      let msg=error.message||'Access request failed.';
+      try{
+        const ctx=error.context;
+        if(ctx && typeof ctx.json==='function'){
+          const body=await ctx.json();
+          if(body?.error) msg=body.error;
+        }
+      }catch(_){}
+      throw new Error(msg);
+    }
+
+    if(data?.error) throw new Error(data.error);
+    return data;
+  }
+
+  const createAccess=(account)=>manageAccess('create',{account});
+  const listAccess=()=>manageAccess('list');
+  const updateAccess=(account)=>manageAccess('update',{account});
+  const setAccessActive=(userId,isActive)=>manageAccess('set-active',{userId,isActive});
+  const resetAccessPassword=(userId,password)=>manageAccess('reset-password',{userId,password});
+  const deleteAccess=(userId)=>manageAccess('delete',{userId});
+
+  window.LiveOpsCloud = {isConfigured:()=>!!client, signIn, signOut, loadState, saveState, subscribe, uploadProof, submitEnquiry, sanitizeClientState, createAccess, listAccess, updateAccess, setAccessActive, resetAccessPassword, deleteAccess};
 })();

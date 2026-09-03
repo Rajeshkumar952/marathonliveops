@@ -244,3 +244,19 @@ body{background:var(--paper);color:var(--ink);letter-spacing:-.01em}
   .hero h1 { font-size: 39px; }
   .hero-cta { grid-template-columns: 1fr; }
 }
+
+/* V6 Access Management */
+.access-top-actions{justify-content:space-between;align-items:center}
+.ops-access-fields{margin-top:14px;padding-top:14px;border-top:1px solid #e5e7eb}
+.access-note{margin-top:14px;padding:14px 16px;border:1px solid #d9e4f5;border-radius:12px;background:#f7fbff;color:#24364b;font-size:13px}
+.access-modal-overlay{position:fixed;inset:0;z-index:99999;background:rgba(9,18,31,.62);display:flex;align-items:center;justify-content:center;padding:24px}
+.access-modal-card{width:min(1380px,96vw);max-height:88vh;background:#fff;border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.28);overflow:hidden;display:flex;flex-direction:column}
+.access-modal-head{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid #e6e9ee}
+.access-modal-head h2{margin:0;font-size:22px}.access-modal-head p{margin:4px 0 0;color:#6b7280;font-size:12px}
+.access-modal-close{border:0;background:#eef3f8;width:38px;height:38px;border-radius:50%;font-size:25px;cursor:pointer;color:#24405f}
+.access-table-wrap{overflow:auto;padding:0 8px 12px}
+.access-table{width:100%;border-collapse:collapse;min-width:1050px;font-size:12px}
+.access-table th{position:sticky;top:0;background:#f7f9fc;text-align:left;padding:13px 12px;color:#536273;font-size:10px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e5e7eb}
+.access-table td{padding:13px 12px;border-bottom:1px solid #eef0f3;color:#27364a;vertical-align:middle}
+.access-actions{display:flex;gap:6px;flex-wrap:wrap}.access-actions button{border:1px solid #d6dee8;background:#fff;border-radius:8px;padding:7px 9px;font:700 10px Manrope;cursor:pointer}.access-actions button:hover{background:#f4f7fb}.access-actions .danger{color:#b42318;border-color:#f0c5c1}.access-empty{text-align:center!important;padding:36px!important;color:#7c8794!important}
+@media(max-width:760px){.access-modal-overlay{padding:8px;align-items:flex-end}.access-modal-card{width:100%;max-height:90vh;border-radius:18px 18px 0 0}.access-modal-head{padding:17px 16px}.access-table-wrap{padding:0 4px 8px}.access-top-actions{gap:8px}}

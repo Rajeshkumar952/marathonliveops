@@ -1,7 +1,7 @@
-const CACHE='liveops-v4-shell';
+const CACHE='liveops-v6-clean-20260903';
 const SHELL=['./','./index.html','./styles.css','./app.js','./cloud.js','./resilience.js','./config.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const k of await caches.keys()){if(k!==CACHE)await caches.delete(k);}await self.clients.claim();})()));
 self.addEventListener('fetch',e=>{
   if(e.request.method!=='GET') return;
   const u=new URL(e.request.url);
