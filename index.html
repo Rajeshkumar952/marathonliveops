@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="styles.css?v=20260903-clean2" />
   <link rel="stylesheet" href="login-v2.css?v=20260903-clean2" />
   <link rel="stylesheet" href="fresh-v5.css?v=20260903-clean2" />
-<link rel="stylesheet" href="responsive-approved.css?v=20260904-phonefix01">
+<link rel="stylesheet" href="responsive-approved.css?v=20260904-phonefix02">
 </head>
 <body>
 <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">×</button>
@@ -157,76 +157,96 @@
   <script src="fresh-v5.js?v=20260903-clean2"></script>
   <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js?v=20260903-clean2",{updateViaCache:"none"}).then(r=>r.update()).catch(console.warn));}</script>
 
-<script>
-(function(){
-  const q=s=>document.querySelector(s);
-  document.addEventListener('click',function(e){
-    if(e.target.closest('#mobileMenuToggle')) document.body.classList.add('mobile-menu-open');
-    if(e.target.closest('#mobileMenuClose') || (document.body.classList.contains('mobile-menu-open') && e.target.closest('.navlinks a')))
-      document.body.classList.remove('mobile-menu-open');
-
-    if(window.innerWidth<=820 && e.target.closest('.app-header') && !e.target.closest('button,a,input,select,textarea')){
-      const r=e.target.closest('.app-header').getBoundingClientRect();
-      if(e.clientX-r.left<60) document.body.classList.add('app-menu-open');
-    }
-    if(document.body.classList.contains('app-menu-open') && !e.target.closest('.sidebar') && !e.target.closest('.app-header'))
-      document.body.classList.remove('app-menu-open');
-    if(e.target.closest('.side-nav button')) document.body.classList.remove('app-menu-open');
-  });
-  window.addEventListener('resize',()=>{if(innerWidth>820){document.body.classList.remove('mobile-menu-open','app-menu-open')}});
-})();
-</script>
-
 
 <script>
-(function phoneFix01(){
-  function qs(s){return document.querySelector(s);}
+(function mobileResponsiveController(){
+  const $ = (s, root=document) => root.querySelector(s);
+
   function closePublicMenu(){
     document.body.classList.remove('mobile-menu-open');
-    var b=qs('#mobileMenuToggle'); if(b){b.textContent='☰';b.setAttribute('aria-label','Open menu');}
+    const btn = $('#mobileMenuToggle');
+    if(btn){
+      btn.textContent = '☰';
+      btn.setAttribute('aria-label','Open menu');
+    }
   }
+
   function togglePublicMenu(){
-    var open=document.body.classList.toggle('mobile-menu-open');
-    var b=qs('#mobileMenuToggle'); if(b){b.textContent=open?'×':'☰';b.setAttribute('aria-label',open?'Close menu':'Open menu');}
+    const open = !document.body.classList.contains('mobile-menu-open');
+    document.body.classList.toggle('mobile-menu-open', open);
+    const btn = $('#mobileMenuToggle');
+    if(btn){
+      btn.textContent = open ? '×' : '☰';
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
   }
-  function addMobileLoginActions(){
-    var nav=qs('.navlinks');
+
+  function buildMobileLoginActions(){
+    const nav = $('#publicNav .navlinks');
     if(!nav || nav.querySelector('.mlo-mobile-login-actions')) return;
-    var wrap=document.createElement('div');
-    wrap.className='mlo-mobile-login-actions';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'mlo-mobile-login-actions';
+
     [
       ['Client Login','client'],
       ['Ops Login','ops'],
       ['Command Center','admin']
-    ].forEach(function(item){
-      var btn=document.createElement('button');
-      btn.type='button';
-      btn.className=item[1]==='admin'?'btn btn-primary':'btn btn-secondary';
-      btn.textContent=item[0];
-      btn.addEventListener('click',function(){
+    ].forEach(([label,role])=>{
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = role === 'admin' ? 'btn primary' : (role === 'ops' ? 'btn primary' : 'btn ghost');
+      b.textContent = label;
+      b.addEventListener('click',()=>{
         closePublicMenu();
-        var source=document.querySelector('[data-login="'+item[1]+'"]') ||
-                   document.querySelector('[data-role="'+item[1]+'"]') ||
-                   Array.from(document.querySelectorAll('button,a')).find(function(el){
-                     return (el.textContent||'').trim().toLowerCase().includes(item[0].toLowerCase().replace(' login',''));
-                   });
-        if(source && source!==btn) source.click();
+        const original = document.querySelector('[data-open-login="'+role+'"]');
+        if(original) original.click();
       });
-      wrap.appendChild(btn);
+      wrap.appendChild(b);
     });
+
     nav.appendChild(wrap);
   }
-  document.addEventListener('DOMContentLoaded',addMobileLoginActions);
-  addMobileLoginActions();
 
-  document.addEventListener('click',function(e){
-    var t=e.target.closest('#mobileMenuToggle');
-    if(t){ e.preventDefault(); e.stopImmediatePropagation(); togglePublicMenu(); return; }
-    if(window.innerWidth<=820 && document.body.classList.contains('mobile-menu-open') && e.target.closest('.navlinks a')){
+  document.addEventListener('DOMContentLoaded', buildMobileLoginActions);
+  buildMobileLoginActions();
+
+  document.addEventListener('click', function(e){
+    if(window.innerWidth <= 820 && e.target.closest('#mobileMenuToggle')){
+      e.preventDefault();
+      togglePublicMenu();
+      return;
+    }
+
+    if(window.innerWidth <= 820 && document.body.classList.contains('mobile-menu-open') && e.target.closest('#publicNav .navlinks > a')){
       closePublicMenu();
     }
-  },true);
-  window.addEventListener('resize',function(){if(innerWidth>820)closePublicMenu();});
+
+    if(window.innerWidth <= 820 && e.target.closest('.app-header') && !e.target.closest('button,a,input,select,textarea')){
+      const h = e.target.closest('.app-header');
+      const r = h.getBoundingClientRect();
+      if(e.clientX - r.left < 64){
+        document.body.classList.add('app-menu-open');
+      }
+    }
+
+    if(document.body.classList.contains('app-menu-open') &&
+       !e.target.closest('.sidebar') &&
+       !e.target.closest('.app-header')){
+      document.body.classList.remove('app-menu-open');
+    }
+
+    if(e.target.closest('.side-nav button')){
+      document.body.classList.remove('app-menu-open');
+    }
+  });
+
+  window.addEventListener('resize',()=>{
+    if(window.innerWidth > 820){
+      closePublicMenu();
+      document.body.classList.remove('app-menu-open');
+    }
+  });
 })();
 </script>
 

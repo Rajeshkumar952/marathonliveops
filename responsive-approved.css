@@ -64,68 +64,145 @@ img,video,canvas,svg{max-width:100%;height:auto}
 }
 
 
-/* === PHONE FIX 01: sticky public header + clean mobile menu + login actions === */
-@media (max-width:820px){
-  /* Public landing header remains visible while scrolling */
-  body:not(.app-menu-open) .topbar{
-    position:sticky!important;
-    top:0!important;
-    z-index:1500!important;
-    width:100%!important;
-    background:#fff!important;
-    box-shadow:0 1px 12px rgba(8,43,78,.08)!important;
+/* === PHONE FIX 02 — clean public header/menu + preserve hidden app state === */
+
+/* Critical: never let the responsive rule override application visibility. */
+.app-shell.hidden,
+#publicSite.hidden,
+#publicNav.hidden,
+.footer.hidden {
+  display: none !important;
+}
+
+@media (max-width:820px) {
+  /* Public header: fixed, compact, always visible while landing page scrolls */
+  #publicNav.topbar:not(.hidden) {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 2000 !important;
+    width: 100% !important;
+    height: 78px !important;
+    min-height: 78px !important;
+    padding: 9px 16px !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: #fff !important;
+    border-bottom: 1px solid #e9eef4 !important;
+    box-shadow: 0 2px 14px rgba(8,43,78,.07) !important;
   }
 
-  /* Mobile public menu is a clean panel below the header, never on top of hero text */
-  body.mobile-menu-open{overflow:hidden!important}
-  body.mobile-menu-open .navlinks{
-    display:flex!important;
-    position:fixed!important;
-    z-index:1490!important;
-    left:0!important; right:0!important;
-    top:72px!important;
-    bottom:0!important;
-    width:100%!important;
-    padding:22px 22px 32px!important;
-    background:#fff!important;
-    flex-direction:column!important;
-    align-items:stretch!important;
-    gap:4px!important;
-    overflow-y:auto!important;
+  #publicNav .brand {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    gap: 10px !important;
   }
-  body.mobile-menu-open .navlinks a{
-    display:block!important;
-    width:100%!important;
-    padding:14px 6px!important;
-    margin:0!important;
-    font-size:18px!important;
-    line-height:1.25!important;
-    color:#14202d!important;
-    text-decoration:none!important;
-    border-bottom:1px solid #eef2f6!important;
+  #publicNav .brand-mark {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    border-radius: 12px !important;
+  }
+  #publicNav .brand strong {
+    font-size: 16px !important;
+    line-height: 1.1 !important;
+  }
+  #publicNav .brand small {
+    font-size: 9px !important;
+    letter-spacing: .08em !important;
+    white-space: nowrap !important;
   }
 
-  /* Keep the hamburger in the header; don't use the old floating X */
-  body.mobile-menu-open .mobile-menu-toggle{position:relative!important;z-index:1510!important}
-  body.mobile-menu-open .mobile-menu-close{display:none!important}
-
-  /* Login actions injected into mobile menu */
-  .mlo-mobile-login-actions{
-    display:flex!important;
-    flex-direction:column!important;
-    gap:10px!important;
-    margin-top:18px!important;
-    padding-top:16px!important;
-    border-top:1px solid #e7edf4!important;
+  /* Fixed header needs space in the landing document */
+  #publicSite:not(.hidden) {
+    padding-top: 78px !important;
   }
-  .mlo-mobile-login-actions button{
-    width:100%!important;
-    min-height:48px!important;
-    border-radius:12px!important;
-    font-size:15px!important;
-    font-weight:700!important;
+
+  /* Only hamburger stays in public header */
+  #publicNav .navlinks,
+  #publicNav .nav-actions {
+    display: none !important;
+  }
+  #publicNav .mobile-menu-toggle {
+    display: flex !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin-left: 10px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 0 !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    color: #082b4e !important;
+    font-size: 28px !important;
+    line-height: 1 !important;
+    z-index: 2010 !important;
+  }
+  .mobile-menu-close { display: none !important; }
+
+  /* Proper mobile menu: separate white panel, never mixed with hero */
+  body.mobile-menu-open {
+    overflow: hidden !important;
+  }
+  body.mobile-menu-open #publicNav .navlinks {
+    display: flex !important;
+    position: fixed !important;
+    z-index: 1990 !important;
+    top: 78px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    padding: 20px 24px 32px !important;
+    background: #fff !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  body.mobile-menu-open #publicNav .navlinks > a {
+    display: block !important;
+    width: 100% !important;
+    padding: 16px 4px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #edf1f5 !important;
+    color: #152231 !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+    text-decoration: none !important;
+  }
+  body.mobile-menu-open #publicNav .navlinks > a span {
+    display: none !important;
+  }
+
+  .mlo-mobile-login-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 22px !important;
+    padding-top: 18px !important;
+    border-top: 1px solid #e7edf4 !important;
+  }
+  .mlo-mobile-login-actions button {
+    width: 100% !important;
+    min-height: 50px !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+  }
+
+  /* Logged-in app must never appear below the landing page */
+  #appShell.hidden {
+    display: none !important;
   }
 }
-@media (min-width:821px){
-  .mlo-mobile-login-actions{display:none!important}
+
+@media (min-width:821px) {
+  .mlo-mobile-login-actions { display: none !important; }
 }
