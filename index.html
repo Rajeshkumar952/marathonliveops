@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="styles.css?v=20260903-clean2" />
   <link rel="stylesheet" href="login-v2.css?v=20260903-clean2" />
   <link rel="stylesheet" href="fresh-v5.css?v=20260903-clean2" />
-<link rel="stylesheet" href="responsive-approved.css?v=20260904-r1">
+<link rel="stylesheet" href="responsive-approved.css?v=20260904-phonefix01">
 </head>
 <body>
 <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">×</button>
@@ -174,6 +174,59 @@
     if(e.target.closest('.side-nav button')) document.body.classList.remove('app-menu-open');
   });
   window.addEventListener('resize',()=>{if(innerWidth>820){document.body.classList.remove('mobile-menu-open','app-menu-open')}});
+})();
+</script>
+
+
+<script>
+(function phoneFix01(){
+  function qs(s){return document.querySelector(s);}
+  function closePublicMenu(){
+    document.body.classList.remove('mobile-menu-open');
+    var b=qs('#mobileMenuToggle'); if(b){b.textContent='☰';b.setAttribute('aria-label','Open menu');}
+  }
+  function togglePublicMenu(){
+    var open=document.body.classList.toggle('mobile-menu-open');
+    var b=qs('#mobileMenuToggle'); if(b){b.textContent=open?'×':'☰';b.setAttribute('aria-label',open?'Close menu':'Open menu');}
+  }
+  function addMobileLoginActions(){
+    var nav=qs('.navlinks');
+    if(!nav || nav.querySelector('.mlo-mobile-login-actions')) return;
+    var wrap=document.createElement('div');
+    wrap.className='mlo-mobile-login-actions';
+    [
+      ['Client Login','client'],
+      ['Ops Login','ops'],
+      ['Command Center','admin']
+    ].forEach(function(item){
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.className=item[1]==='admin'?'btn btn-primary':'btn btn-secondary';
+      btn.textContent=item[0];
+      btn.addEventListener('click',function(){
+        closePublicMenu();
+        var source=document.querySelector('[data-login="'+item[1]+'"]') ||
+                   document.querySelector('[data-role="'+item[1]+'"]') ||
+                   Array.from(document.querySelectorAll('button,a')).find(function(el){
+                     return (el.textContent||'').trim().toLowerCase().includes(item[0].toLowerCase().replace(' login',''));
+                   });
+        if(source && source!==btn) source.click();
+      });
+      wrap.appendChild(btn);
+    });
+    nav.appendChild(wrap);
+  }
+  document.addEventListener('DOMContentLoaded',addMobileLoginActions);
+  addMobileLoginActions();
+
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('#mobileMenuToggle');
+    if(t){ e.preventDefault(); e.stopImmediatePropagation(); togglePublicMenu(); return; }
+    if(window.innerWidth<=820 && document.body.classList.contains('mobile-menu-open') && e.target.closest('.navlinks a')){
+      closePublicMenu();
+    }
+  },true);
+  window.addEventListener('resize',function(){if(innerWidth>820)closePublicMenu();});
 })();
 </script>
 
