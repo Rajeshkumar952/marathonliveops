@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Marathon LiveOps</title>
   <meta name="description" content="Live marathon operations control, proof, verification and client visibility." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,8 +11,10 @@
   <link rel="stylesheet" href="styles.css?v=20260903-clean2" />
   <link rel="stylesheet" href="login-v2.css?v=20260903-clean2" />
   <link rel="stylesheet" href="fresh-v5.css?v=20260903-clean2" />
+<link rel="stylesheet" href="responsive-approved.css?v=20260904-r1">
 </head>
 <body>
+<button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">×</button>
   <div id="toast" class="toast" aria-live="polite"></div>
 
   <header class="topbar" id="publicNav">
@@ -20,7 +22,7 @@
       <span class="brand-mark">ML</span>
       <span><strong>Marathon LiveOps</strong><small>Marathon Operations Technology</small></span>
     </a>
-    <nav class="navlinks">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu">☰</button><nav class="navlinks">
       <a href="#home"><span>⌂</span>Home</a>
       <a href="#how"><span>↻</span>How It Works</a>
       <a href="#about"><span>◎</span>About Us</a>
@@ -154,5 +156,26 @@
   <script src="command-center-v3.js?v=20260903-clean2"></script>
   <script src="fresh-v5.js?v=20260903-clean2"></script>
   <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js?v=20260903-clean2",{updateViaCache:"none"}).then(r=>r.update()).catch(console.warn));}</script>
+
+<script>
+(function(){
+  const q=s=>document.querySelector(s);
+  document.addEventListener('click',function(e){
+    if(e.target.closest('#mobileMenuToggle')) document.body.classList.add('mobile-menu-open');
+    if(e.target.closest('#mobileMenuClose') || (document.body.classList.contains('mobile-menu-open') && e.target.closest('.navlinks a')))
+      document.body.classList.remove('mobile-menu-open');
+
+    if(window.innerWidth<=820 && e.target.closest('.app-header') && !e.target.closest('button,a,input,select,textarea')){
+      const r=e.target.closest('.app-header').getBoundingClientRect();
+      if(e.clientX-r.left<60) document.body.classList.add('app-menu-open');
+    }
+    if(document.body.classList.contains('app-menu-open') && !e.target.closest('.sidebar') && !e.target.closest('.app-header'))
+      document.body.classList.remove('app-menu-open');
+    if(e.target.closest('.side-nav button')) document.body.classList.remove('app-menu-open');
+  });
+  window.addEventListener('resize',()=>{if(innerWidth>820){document.body.classList.remove('mobile-menu-open','app-menu-open')}});
+})();
+</script>
+
 </body>
 </html>
