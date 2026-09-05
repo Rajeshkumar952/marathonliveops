@@ -8,23 +8,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260905-v8-logo-chat" />
+  <link rel="stylesheet" href="styles.css?v=20260905-v11-team-logistics-contacts" />
   <link rel="stylesheet" href="login-v2.css?v=20260903-clean2" />
-  <link rel="stylesheet" href="fresh-v5.css?v=20260905-v8-logo-chat" />
+  <link rel="stylesheet" href="fresh-v5.css?v=20260905-v11-team-logistics-contacts" />
 </head>
 <body>
 <div id="toast" class="toast" aria-live="polite"></div>
 
   <header class="topbar" id="publicNav">
     <a class="brand" href="#home" aria-label="Marathon LiveOps home">
-      <span class="brand-mark">ML</span>
+      <span class="brand-mark company-logo-mark"><img src="the-nile-mile-logo.png" alt="The Nile Mile"></span>
       <span><strong>Marathon LiveOps</strong><small>Marathon Operations Technology</small></span>
     </a>
     <button class="mobile-menu-toggle" id="mloPublicMenuButton" type="button" aria-label="Open menu" aria-controls="mobilePublicPanel" aria-expanded="false">☰</button><nav class="navlinks">
-      <a href="#home"><span>⌂</span>Home</a>
-      <a href="#how"><span>↻</span>How It Works</a>
-      <a href="#about"><span>◎</span>About Us</a>
-      <a href="#contact"><span>✉</span>Let's Connect</a>
+      <a href="#home"><span data-ui-icon="home"></span>Home</a>
+      <a href="#how"><span data-ui-icon="refresh"></span>How It Works</a>
+      <a href="#about"><span data-ui-icon="info"></span>About Us</a>
+      <a href="#contact"><span data-ui-icon="message"></span>Let's Connect</a>
     </nav>
     <div class="nav-actions">
       <button class="btn ghost" data-open-login="client">◉ Client Login</button>
@@ -52,9 +52,9 @@
       <div class="hero-bg"></div>
       <div class="hero-overlay"></div>
       <div class="hero-content">
-        <div class="eyebrow">MARATHON OPERATIONS TECHNOLOGY</div>
-        <h1>From Ground Execution<br><span>to Live Control.</span></h1>
-        <p>A command layer for marathon execution — connecting ground teams, verified proof, management control and client visibility in real time.</p>
+        <div class="eyebrow" id="landingEyebrow">MARATHON OPERATIONS TECHNOLOGY</div>
+        <h1><span id="landingHeroLine1">From Ground Execution</span><br><span id="landingHeroLine2">to Live Control.</span></h1>
+        <p id="landingHeroDescription">A command layer for marathon execution — connecting ground teams, verified proof, management control and client visibility in real time.</p>
         <div class="hero-points">
           <span>Live infrastructure</span><span>Verified ground proof</span><span>Controlled visibility</span>
         </div>
@@ -73,44 +73,45 @@
         <p>Built around the way a real marathon operations team plans, assigns, executes, proves and closes work.</p>
       </div>
       <div class="pillar-grid">
-        <article class="pillar"><div class="line-icon">▦</div><h3>Digital-First Operations</h3><b>Plan. Assign. Track. Update.</b><p>Structured workflows replace scattered calls, sheets and message chains.</p></article>
-        <article class="pillar"><div class="line-icon">▧</div><h3>Proof-Based Execution</h3><b>Don’t just mark it done. Prove it.</b><p>Photos, timestamps, remarks and verification build an auditable execution record.</p></article>
-        <article class="pillar"><div class="line-icon">◉</div><h3>Live Operational Visibility</h3><b>Ground updates. Management sees.</b><p>Progress, delays and blockers reach the right person without status-chasing.</p></article>
-        <article class="pillar"><div class="line-icon">✓</div><h3>Accountability at Every Level</h3><b>Every task has an owner.</b><p>Task → Location → Owner → Deadline → Status → Proof → Verification.</p></article>
+        <article class="pillar"><div class="line-icon" data-ui-icon="dashboard"></div><h3>Digital-First Operations</h3><b>Plan. Assign. Track. Update.</b><p>Structured workflows replace scattered calls, sheets and message chains.</p></article>
+        <article class="pillar"><div class="line-icon" data-ui-icon="camera"></div><h3>Proof-Based Execution</h3><b>Don’t just mark it done. Prove it.</b><p>Photos, timestamps, remarks and verification build an auditable execution record.</p></article>
+        <article class="pillar"><div class="line-icon" data-ui-icon="eye"></div><h3>Live Operational Visibility</h3><b>Ground updates. Management sees.</b><p>Progress, delays and blockers reach the right person without status-chasing.</p></article>
+        <article class="pillar"><div class="line-icon" data-ui-icon="task"></div><h3>Accountability at Every Level</h3><b>Every task has an owner.</b><p>Task → Location → Owner → Deadline → Status → Proof → Verification.</p></article>
       </div>
-      <div class="ops-gallery">
-        <div class="gallery-card g1"><span>Hydration & route support</span></div>
-        <div class="gallery-card g2"><span>Ground execution</span></div>
-        <div class="gallery-card g3"><span>Race-course control</span></div>
+      <div class="ops-gallery landing-dept-gallery" id="landingDepartmentGallery">
+        <article class="gallery-card" data-dept-card="hydration"><img src="hero-ops.jpg" alt="Hydration Station"><span><i data-ui-icon="water"></i><b>Hydration Station</b></span></article>
+        <article class="gallery-card" data-dept-card="barricade"><img src="control-ops.jpg" alt="Barricade and Cones"><span><i data-ui-icon="barricade"></i><b>Barricade &amp; Cones</b></span></article>
+        <article class="gallery-card" data-dept-card="manpower"><img src="proof-ops.jpg" alt="Manpower"><span><i data-ui-icon="users"></i><b>Manpower</b></span></article>
+        <article class="gallery-card" data-dept-card="toilet"><img src="marathon-ops-sunrise.jpg" alt="Bio-toilet"><span><i data-ui-icon="toilet"></i><b>Bio-toilet</b></span></article>
+        <article class="gallery-card" data-dept-card="signage"><img src="marathon-liveops-hero.png" alt="Route Direction and Signages"><span><i data-ui-icon="route"></i><b>Route Direction &amp; Signages</b></span></article>
+        <article class="gallery-card" data-dept-card="transport"><img src="control-ops.jpg" alt="Transportation"><span><i data-ui-icon="truck"></i><b>Transportation</b></span></article>
+        <article class="gallery-card" data-dept-card="culture"><img src="hero-ops.jpg" alt="Cultural Point"><span><i data-ui-icon="culture"></i><b>Cultural Point</b></span></article>
       </div>
     </section>
 
     <section class="section about" id="about">
       <div class="about-copy">
         <span class="eyebrow dark">ABOUT MARATHON LIVEOPS</span>
-        <h2>Built from real marathon operations. Designed for real-time execution.</h2>
-        <p>Marathon LiveOps connects project planning, ground teams, proof, verification, management control and client visibility in one operational platform.</p>
-        <div class="metric-note">Add only verified company metrics before production launch.</div>
+        <h2 id="landingAboutTitle">Built from real marathon operations. Designed for real-time execution.</h2>
+        <p id="landingAboutDescription">Marathon LiveOps connects project planning, ground teams, proof, verification, management control and client visibility in one operational platform.</p>
       </div>
-      <div class="metric-grid">
-        <div><strong>XX+</strong><span>Years of Operations Experience</span></div>
-        <div><strong>XX+</strong><span>Marathon / Running Events</span></div>
-        <div><strong>XX+</strong><span>Projects Executed</span></div>
-        <div><strong>XX+</strong><span>Cities / Locations</span></div>
-        <div><strong>XXK+</strong><span>Participants Supported</span></div>
-        <div><strong>XX+</strong><span>Departments Managed</span></div>
+      <div class="metric-grid" id="landingMetricGrid">
+        <div><strong>6+</strong><span>Marathons Delivered</span></div>
+        <div><strong>80K+</strong><span>Participants Supported</span></div>
+        <div><strong>10+</strong><span>Operations Executed</span></div>
+        <div><strong>7</strong><span>Core Execution Departments</span></div>
       </div>
     </section>
 
     <section class="section contact" id="contact">
       <div class="contact-card company-card">
         <span class="eyebrow dark">LET'S CONNECT</span>
-        <h2>Marathon LiveOps</h2>
-        <h4>A unit of Utsara Sports Pvt Ltd.</h4>
+        <h2 id="landingContactTitle">Marathon LiveOps</h2>
+        <h4 id="landingContactCompany">A unit of Utsara Sports Pvt Ltd.</h4>
         <div class="contact-list">
-          <p><b>Office</b><br>Park Centre, 8th Floor, Celica Park 24, Park Street, Kolkata – 700016</p>
-          <p><b>Phone</b><br>+91 95237 60856</p>
-          <p><b>Email</b><br>Rajeshkumar9523rama@gmail.com</p>
+          <p><b>Office</b><br><span id="landingContactOffice">Park Centre, 8th Floor, Celica Park 24, Park Street, Kolkata – 700016</span></p>
+          <p><b>Phone</b><br><span id="landingContactPhone">+91 95237 60856</span></p>
+          <p><b>Email</b><br><span id="landingContactEmail">Rajeshkumar9523rama@gmail.com</span></p>
         </div>
       </div>
       <form class="contact-card form-card" id="contactForm">
@@ -161,13 +162,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=20260903-clean2"></script>
-  <script src="cloud.js?v=20260905-v8-logo-chat"></script>
+  <script src="ui-icons.js?v=20260905-upgrade-v10"></script>
+  <script src="cloud.js?v=20260905-v11-team-logistics-contacts"></script>
   <script src="resilience.js?v=20260903-clean2"></script>
-  <script src="app.js?v=20260905-v8-logo-chat"></script>
+  <script src="app.js?v=20260905-v11-team-logistics-contacts"></script>
   <script src="login-v2.js?v=20260903-clean2"></script>
-  <script src="command-center-v3.js?v=20260905-v8-logo-chat"></script>
-  <script src="fresh-v5.js?v=20260905-v8-logo-chat"></script>
-  <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js?v=20260905-v8-logo-chat",{updateViaCache:"none"}).then(r=>r.update()).catch(console.warn));}</script>
+  <script src="command-center-v3.js?v=20260905-v11-team-logistics-contacts"></script>
+  <script src="fresh-v5.js?v=20260905-v11-team-logistics-contacts"></script>
+  <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js?v=20260905-v11-team-logistics-contacts",{updateViaCache:"none"}).then(r=>r.update()).catch(console.warn));}</script>
 
 
 

@@ -28,6 +28,43 @@ const DEFAULT_PROOF_RULES={
   adminVerification:true,clientAfterVerification:true
 };
 
+
+const DEFAULT_LANDING_CONTENT={
+  eyebrow:'MARATHON OPERATIONS TECHNOLOGY',
+  heroLine1:'From Ground Execution',
+  heroLine2:'to Live Control.',
+  heroDescription:'A command layer for marathon execution — connecting ground teams, verified proof, management control and client visibility in real time.',
+  aboutTitle:'Built from real marathon operations. Designed for real-time execution.',
+  aboutDescription:'Marathon LiveOps connects project planning, ground teams, proof, verification, management control and client visibility in one operational platform.',
+  metrics:[
+    {value:'6+',label:'Marathons Delivered'},
+    {value:'80K+',label:'Participants Supported'},
+    {value:'10+',label:'Operations Executed'},
+    {value:'7',label:'Core Execution Departments'}
+  ],
+  departments:[
+    {key:'hydration',label:'Hydration Station',icon:'water',image:'hero-ops.jpg'},
+    {key:'barricade',label:'Barricade & Cones',icon:'barricade',image:'control-ops.jpg'},
+    {key:'manpower',label:'Manpower',icon:'users',image:'proof-ops.jpg'},
+    {key:'toilet',label:'Bio-toilet',icon:'toilet',image:'marathon-ops-sunrise.jpg'},
+    {key:'signage',label:'Route Direction & Signages',icon:'route',image:'marathon-liveops-hero.png'},
+    {key:'transport',label:'Transportation',icon:'truck',image:'control-ops.jpg'},
+    {key:'culture',label:'Cultural Point',icon:'culture',image:'hero-ops.jpg'}
+  ],
+  contact:{
+    title:'Marathon LiveOps',
+    company:'A unit of Utsara Sports Pvt Ltd.',
+    office:'Park Centre, 8th Floor, Celica Park 24, Park Street, Kolkata – 700016',
+    phone:'+91 95237 60856',
+    email:'Rajeshkumar9523rama@gmail.com'
+  },
+  fonts:{
+    heading:'Manrope',
+    body:'Inter',
+    heroSize:'default'
+  }
+};
+
 const seed={
   users:[],
   project:null,
@@ -36,6 +73,9 @@ const seed={
   departments:[],
   tasks:[],
   vendors:[],
+  documents:[],
+  contacts:[],
+  landingContent:structuredClone(DEFAULT_LANDING_CONTENT),
   fieldTemplate:structuredClone(DEFAULT_TASK_FIELDS),
   proofRules:{...DEFAULT_PROOF_RULES},
   opsRules:{...DEFAULT_OPS_RULES},
@@ -48,13 +88,18 @@ const seed={
 
 function normalizeState(input){
   const s=(input&&typeof input==='object')?input:{};
-  for(const k of ['users','projects','archivedProjects','departments','tasks','vendors','team','messages','approvals','issues']){
+  for(const k of ['users','projects','archivedProjects','departments','tasks','vendors','documents','contacts','team','messages','approvals','issues']){
     s[k]=Array.isArray(s[k])?s[k]:[];
   }
   s.fieldTemplate=Array.isArray(s.fieldTemplate)&&s.fieldTemplate.length?s.fieldTemplate:structuredClone(DEFAULT_TASK_FIELDS);
   s.proofRules={...DEFAULT_PROOF_RULES,...(s.proofRules||{})};
   s.opsRules={...DEFAULT_OPS_RULES,...(s.opsRules||{})};
   s.clientRules={...DEFAULT_CLIENT_RULES,...(s.clientRules||{})};
+  s.landingContent={...structuredClone(DEFAULT_LANDING_CONTENT),...(s.landingContent||{})};
+  s.landingContent.metrics=Array.isArray(s.landingContent.metrics)&&s.landingContent.metrics.length?s.landingContent.metrics:structuredClone(DEFAULT_LANDING_CONTENT.metrics);
+  s.landingContent.departments=Array.isArray(s.landingContent.departments)&&s.landingContent.departments.length?s.landingContent.departments:structuredClone(DEFAULT_LANDING_CONTENT.departments);
+  s.landingContent.contact={...DEFAULT_LANDING_CONTENT.contact,...(s.landingContent.contact||{})};
+  s.landingContent.fonts={...DEFAULT_LANDING_CONTENT.fonts,...(s.landingContent.fonts||{})};
 
   if(s.project?.name){
     if(!s.project.id) s.project.id='PRJ-'+Date.now().toString(36).toUpperCase();
@@ -173,25 +218,30 @@ function noProjectHtml(){
 function launch(user){session.user=user;session.role=user.role;$('#loginModal').classList.add('hidden');$('#publicSite').classList.add('hidden');$('#publicNav').classList.add('hidden');$('.footer').classList.add('hidden');$('#appShell').classList.remove('hidden');buildSidebar();navigate(user.role==='admin'?'dashboard':user.role==='ops'?'ops-home':'client-overview')}
 
 const menus={
- admin:[['dashboard','▦','Dashboard'],['projects','▣','Projects'],['tasks','✓','Tasks'],['team','♟','Team & Access'],['fields','＋','Field Builder'],['proof','⌁','Proof Verification'],['issues','!','Issues'],['vendors','▤','Vendors & Logistics'],['client-control','◉','Client Control'],['chat','✉','Chat'],['reports','▥','Reports'],['settings','⚙','Settings']],
- ops:[['ops-home','⌂','Home'],['ops-tasks','▦','My Tasks'],['ops-update','↻','Update Status'],['ops-proof','▧','Upload Proof'],['ops-issue','!','Report Issue'],['ops-instructions','▣','Instructions'],['ops-chat','✉','Chat'],['ops-contacts','☎','Contacts']],
- client:[['client-overview','⌂','Overview'],['client-progress','▦','Progress'],['client-proof','▧','Verified Proof'],['client-approvals','✓','Approvals'],['client-docs','▤','Documents'],['client-chat','✉','Messages'],['client-reports','▥','Reports'],['client-support','☎','Support']]
+ admin:[['dashboard','dashboard','Dashboard'],['projects','project','Projects'],['team','users','Team & Access'],['fields','sliders','Field Builder'],['proof','camera','Proof Verification'],['issues','alert','Issues'],['vendors','truck','Vendors & Logistics'],['contacts','phone','Contacts'],['client-control','eye','Client Control'],['chat','message','Chat'],['reports','archive','Reports'],['settings','settings','Settings']],
+ ops:[['ops-home','home','Home'],['ops-tasks','task','My Tasks'],['ops-update','refresh','Update Status'],['ops-proof','camera','Upload Proof'],['ops-logistics','truck','Logistics'],['ops-issue','alert','Report Issue'],['ops-instructions','info','Instructions'],['ops-docs','document','Documents'],['ops-chat','message','Chat'],['ops-contacts','phone','Contacts']],
+ client:[['client-overview','home','Overview'],['client-progress','dashboard','Progress'],['client-proof','camera','Verified Proof'],['client-logistics','truck','Logistics'],['client-approvals','task','Approvals'],['client-docs','document','Documents'],['client-chat','message','Messages'],['client-reports','archive','Reports'],['client-support','phone','Support'],['client-contacts','phone','Contacts']]
 };
 function menuForRole(role){
   let items=[...(menus[role]||[])];
   if(role==='client'){
     const r={...DEFAULT_CLIENT_RULES,...(state.clientRules||{})};
-    const map={'client-progress':'departments','client-proof':'approvedProof','client-approvals':'approvals','client-docs':'documents','client-chat':'messages','client-reports':'reports','client-support':'support'};
+    const map={'client-progress':'departments','client-proof':'approvedProof','client-logistics':'vendorContacts','client-approvals':'approvals','client-docs':'documents','client-chat':'messages','client-reports':'reports','client-support':'support','client-contacts':'support'};
     items=items.filter(m=>!map[m[0]]||r[map[m[0]]]!==false);
   }
   if(role==='ops'){
     const r={...DEFAULT_OPS_RULES,...(state.opsRules||{})};
-    const map={'ops-update':'statusUpdate','ops-proof':'liveCameraProof','ops-issue':'issueEscalation','ops-instructions':'instructions','ops-chat':'chat','ops-contacts':'contacts'};
+    const map={'ops-update':'statusUpdate','ops-proof':'liveCameraProof','ops-logistics':'contacts','ops-issue':'issueEscalation','ops-instructions':'instructions','ops-chat':'chat','ops-contacts':'contacts'};
     items=items.filter(m=>!map[m[0]]||r[map[m[0]]]!==false);
   }
   return items;
 }
-function buildSidebar(){const role=session.role;const items=menuForRole(role);$('#sidebar').innerHTML=`<div class="side-brand"><span class="brand-mark">ML</span><span><strong>${role==='admin'?'ADMIN':role==='ops'?'OPS TEAM':'CLIENT'}</strong><small>Marathon LiveOps</small></span></div><nav class="side-nav">${items.map(m=>`<button data-page="${m[0]}"><span class="ico">${m[1]}</span>${m[2]}</button>`).join('')}</nav>`;$$('[data-page]','#sidebar').forEach(b=>b.onclick=()=>navigate(b.dataset.page))}
+function buildSidebar(){
+  const role=session.role;
+  const items=menuForRole(role);
+  $('#sidebar').innerHTML=`<div class="side-brand"><span class="brand-mark company-logo-mark"><img src="the-nile-mile-logo.png" alt="The Nile Mile"></span><span><strong>${role==='admin'?'ADMIN':role==='ops'?'OPS TEAM':'CLIENT'}</strong><small>Marathon LiveOps</small></span></div><nav class="side-nav">${items.map(m=>`<button data-page="${m[0]}"><span class="ico">${window.MLIcon?MLIcon(m[1]):''}</span>${m[2]}</button>`).join('')}</nav>`;
+  $$('[data-page]','#sidebar').forEach(b=>b.onclick=()=>navigate(b.dataset.page));
+}
 function navigate(page){
   session.page=page;
   $$('[data-page]','#sidebar').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
@@ -223,7 +273,7 @@ const pages={
   $('#editProject').onclick=()=>createProjectSetup(true);
  },
  tasks(){setHead('Tasks','Create, configure, assign, escalate and close work.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="createTask">+ Create Task</button><button class="btn ghost" id="exportTasks">Export CSV</button></div><div class="data-table"><div class="data-head"><span>Task</span><span>Priority</span><span>Department</span><span>Assigned</span><span>Status</span><span>Action</span></div>${state.tasks.map(t=>`<div class="data-row"><b>${esc(t.name)}<br><small>${t.id}</small></b><span>${t.priority}</span><span>${t.department}</span><span>${t.assignedTo}</span><span class="status ${statusClass(t.status)}">${t.status}</span><button data-edit-task="${t.id}">Edit</button></div>`).join('')}</div>`;$('#createTask').onclick=renderTaskForm;$('#exportTasks').onclick=exportTasksCSV;$$('[data-edit-task]').forEach(b=>b.onclick=()=>renderTaskForm(b.dataset.editTask))},
- team(){setHead('Team & Access','Create and manage Admin, Ops Team and Client website access.');$('#appContent').innerHTML=`<div class="page-actions"><button class="btn primary" id="addMember">+ Create Access</button><button class="btn ghost" id="viewAccessList">Access List</button></div><div class="panel"><h3>ACCESS MANAGEMENT</h3><p>Create role-based website login access. Ops Team accounts can be limited by Department, Role and Zone. Client accounts receive full event visibility.</p></div>`;$('#addMember').onclick=renderAddTeam;$('#viewAccessList').onclick=openAccessList},
+ team(){setHead('Team & Access','Create departments, teams and assign members clearly.');renderTeamDepartmentControl()},
  fields(){setHead('Form & Field Control','Admin decides exactly what information Ops must submit.');resetBuilderFieldsFromState();renderFieldBuilder()},
  proof(){setHead('Proof Verification','Approve, reject or request rework before client visibility.');renderProofs()},
  issues(){setHead('Issues & Blockers','Problems should find Admin automatically.');$('#appContent').innerHTML=`<div class="data-table"><div class="data-head"><span>Issue</span><span>Severity</span><span>Task</span><span>Status</span><span>Time</span><span>Action</span></div>${state.issues.map(i=>`<div class="data-row"><b>${esc(i.title)}</b><span class="status ${statusClass(i.severity)}">${i.severity}</span><span>${i.task}</span><span>${i.status}</span><span>${i.time}</span><button data-resolve="${i.id}">Resolve</button></div>`).join('')}</div>`;$$('[data-resolve]').forEach(b=>b.onclick=()=>{state.issues=state.issues.filter(i=>i.id!==b.dataset.resolve);save();pages.issues();toast('Issue resolved.');})},
@@ -233,7 +283,7 @@ const pages={
  chat(){setHead('Project Chat & Help','Task-linked conversations between Admin, Ops and Client.');renderChat('admin')},
  reports(){setHead('Reports & Records','Export client-safe or internal project records.');$('#appContent').innerHTML=`<div class="panel-grid"><div class="panel"><h3>LIVE PROJECT REPORT</h3><p>Generated from the current saved project state.</p><div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">${stat('READINESS',state.project.readiness+'%')}${stat('TASKS',state.tasks.length)}${stat('ISSUES',state.issues.length,'amber')}</div><div class="page-actions" style="margin-top:18px"><button class="btn primary" id="printReport">Print / Save PDF</button><button class="btn ghost" id="csvReport">Export Tasks CSV</button></div></div><div class="panel"><h3>REPORT INCLUDES</h3><p>✓ Project readiness<br>✓ Department progress<br>✓ Task status<br>✓ Verified milestones<br>✓ Approved proofs<br>✓ Client approvals<br>✓ Decision / chat history</p></div></div>`;$('#printReport').onclick=()=>window.print();$('#csvReport').onclick=exportTasksCSV},
  settings(){setHead('Settings','Project defaults and local recovery controls.');$('#appContent').innerHTML=`<div class="panel"><h3>LOCAL RECOVERY DATA</h3><p>Reset this browser copy back to the approved prototype defaults.</p><button class="btn ghost" id="resetDemo">Reset Local Data</button></div>`;$('#resetDemo').onclick=()=>{if(confirm('Reset all local browser changes?')){state=structuredClone(seed);save();navigate('dashboard');toast('Local data reset.')}}},
- 'ops-home'(){setHead('Ops Home',`${session.user.name} • ${session.user.department||''} • ${session.user.zone||''}`);const tasks=state.tasks.filter(t=>t.assignedTo===session.user.id);const urgent=tasks.find(t=>!t.verified&&t.status!=='Finished')||tasks[0];$('#appContent').innerHTML=`<div class="ops-home"><div class="ops-banner"><h2>Good Morning, ${esc(session.user.name)}</h2><p>${esc(state.project.name)} • ${esc(session.user.department||'Operations')} • ${esc(session.user.zone||'Assigned Area')}</p></div><div class="ops-icons">${[['▦','My Tasks','ops-tasks'],['↻','Update','ops-update'],['▧','Proof','ops-proof'],['!','Issue','ops-issue'],['▣','Instructions','ops-instructions'],['✉','Chat','ops-chat']].map(x=>`<button class="ops-icon" data-page="${x[2]}"><b>${x[0]}</b>${x[1]}</button>`).join('')}</div><h4>DO NOW</h4>${urgent?taskCard(urgent,true):'<p>No assigned tasks.</p>'}</div>`;$$('[data-page]','#appContent').forEach(b=>b.onclick=()=>navigate(b.dataset.page));bindTaskButtons()},
+ 'ops-home'(){setHead('Ops Home',`${session.user.name} • ${session.user.department||''} • ${session.user.zone||''}`);const tasks=state.tasks.filter(t=>t.assignedTo===session.user.id);const urgent=tasks.find(t=>!t.verified&&t.status!=='Finished')||tasks[0];const acts=[['task','My Tasks','ops-tasks'],['refresh','Update','ops-update'],['camera','Proof','ops-proof'],['alert','Issue','ops-issue'],['info','Instructions','ops-instructions'],['message','Chat','ops-chat']];$('#appContent').innerHTML=`<div class="ops-home"><div class="ops-banner"><h2>Good Morning, ${esc(session.user.name)}</h2><p>${esc(state.project.name)} • ${esc(session.user.department||'Operations')} • ${esc(session.user.zone||'Assigned Area')}</p></div><div class="ops-icons">${acts.map(x=>`<button class="ops-icon" data-page="${x[2]}"><b>${window.MLIcon?MLIcon(x[0]):''}</b><span>${x[1]}</span></button>`).join('')}</div><h4>DO NOW</h4>${urgent?taskCard(urgent,true):'<p>No assigned tasks.</p>'}</div>`;$$('[data-page]','#appContent').forEach(b=>b.onclick=()=>navigate(b.dataset.page));bindTaskButtons()},
  'ops-tasks'(){setHead('My Tasks','Only work assigned to you.');const tasks=state.tasks.filter(t=>t.assignedTo===session.user.id);$('#appContent').innerHTML=`<div class="ops-home"><div class="page-actions"><button class="btn primary" data-filter="open">Do Now</button><button class="btn ghost" data-filter="next">Next</button><button class="btn ghost" data-filter="done">Done</button></div><div id="opsTaskList">${tasks.map(t=>taskCard(t)).join('')}</div></div>`;bindTaskButtons()},
  'ops-update'(){setHead('Update Status','Complete only the fields Admin requested.');const t=getOpsTask();if(!t)return noTask();renderOpsUpdate(t)},
  'ops-proof'(){setHead('Upload Proof','Mandatory evidence before completion.');const t=getOpsTask();if(!t)return noTask();renderOpsProof(t)},
@@ -245,7 +295,13 @@ const pages={
  'client-progress'(){setHead('Department Progress','Only approved project progress is visible here.');$('#appContent').innerHTML=deptCards()},
  'client-proof'(){setHead('Verified Ground Proof','Only evidence approved by Admin.');const verified=state.tasks.filter(t=>t.verified);$('#appContent').innerHTML=`<div class="proof-grid">${verified.map(t=>proofClientCard(t)).join('')||'<div class="panel"><p>No verified proof yet.</p></div>'}</div>`},
  'client-approvals'(){setHead('Approvals & Information Requests','Respond without leaving the project dashboard.');$('#appContent').innerHTML=`<div class="panel-grid"><div class="panel"><h3>PENDING ACTIONS</h3>${state.approvals.map(a=>`<div class="approval-card"><span class="status ${a.status==='Pending'?'amber':'green'}">${a.status}</span><h4>${esc(a.title)}</h4><p>${esc(a.note)}</p>${a.status==='Pending'?`<div class="task-actions"><button class="verify" data-approve="${a.id}">✓ Approve / Complete</button><button class="rework" data-change="${a.id}">Request Change</button></div>`:''}</div>`).join('')}</div><div class="panel"><h3>CLIENT → ADMIN → OPS</h3><p>Your response is recorded in the project and can be routed by Admin to the relevant operations team.</p></div></div>`;$$('[data-approve]').forEach(b=>b.onclick=()=>{const a=state.approvals.find(x=>x.id===b.dataset.approve);a.status='Approved';save();pages['client-approvals']();toast('Response submitted to Admin.');});$$('[data-change]').forEach(b=>b.onclick=()=>{const a=state.approvals.find(x=>x.id===b.dataset.change);const m=prompt('What change is required?');if(m){a.status='Change Requested';state.messages.push({thread:'client-artwork',from:'client',to:'admin',text:m,time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})});save();pages['client-approvals']();toast('Change request sent.')}})},
- 'client-docs'(){setHead('Documents','Approved project documents.');$('#appContent').innerHTML=`<div class="panel"><h3>DOCUMENT CENTRE</h3><div class="task-card"><b>Project Execution Summary</b><p>Client-safe project summary</p><button class="btn ghost" onclick="window.print()">Print / Save PDF</button></div><div class="task-card"><b>Approved Artwork Pack</b><p>Production-ready approved artwork</p></div></div>`},
+ 'ops-logistics'(){setHead('Logistics','Vendor, vehicle, driver, material and ETA details shared by Command Center.');renderSharedLogistics('ops')},
+ 'client-logistics'(){setHead('Logistics','Logistics information shared by Command Center.');renderSharedLogistics('client')},
+ 'ops-contacts'(){setHead('Contacts','Important project contacts.');renderContacts('ops')},
+ 'client-contacts'(){setHead('Contacts','Important project contacts.');renderContacts('client')},
+ contacts(){setHead('Contacts','Create and manage the shared contact directory.');renderContacts('admin')},
+ 'ops-docs'(){setHead('Documents','Project files shared with the Ops Team.');renderDocuments('ops')},
+ 'client-docs'(){setHead('Documents','Approved project documents.');renderDocuments('client')},
  'client-chat'(){setHead('Client ↔ Admin Messages','One controlled project conversation.');renderChat('client')},
  'client-reports'(){setHead('Client Reports','A clean project record built from verified live updates.');$('#appContent').innerHTML=`<div class="panel-grid"><div class="panel"><h3>EXECUTIVE SUMMARY</h3><div class="switch-line"><span>Overall Readiness</span><b>${state.project.readiness}%</b></div><div class="switch-line"><span>Verified Milestones</span><b>${state.tasks.filter(t=>t.verified).length}</b></div><div class="switch-line"><span>Open Client Actions</span><b>${state.approvals.filter(a=>a.status==='Pending').length}</b></div><div class="switch-line"><span>Latest Update</span><b>${state.project.lastUpdate}</b></div><button class="btn primary" id="clientPrint" style="margin-top:14px">Print / Save PDF</button></div><div class="panel"><h3>CLIENT-SAFE INFORMATION ONLY</h3><p>Internal remarks, vendor disputes, private contacts and unverified issues remain hidden unless Admin explicitly changes visibility.</p></div></div>`;$('#clientPrint').onclick=()=>window.print()},
  'client-support'(){setHead('Support','Contact the project Admin.');$('#appContent').innerHTML=`<div class="panel"><h3>PROJECT SUPPORT</h3><p>Use <b>Messages</b> for project questions and approval discussions.</p><button class="btn primary" id="supportChat">Open Messages</button></div>`;$('#supportChat').onclick=()=>navigate('client-chat')},
@@ -408,6 +464,146 @@ function renderOpsProof(t){session.selectedTask=t.id;$('#appContent').innerHTML=
 };$('#submitProof').onclick=()=>{if(t.proofs.length<t.proofMin)return toast(`Upload at least ${t.proofMin} photos.`);t.status='Finished';t.progress=100;t.verified=false;save();toast('Submitted for Admin verification.');navigate('ops-tasks')}}
 function proofTile(t,i){const p=t.proofs[i];return `<button class="upload-tile" data-proof-slot="${i}">${p?`<img src="${p.data}" alt="Proof ${i+1}">${p.syncPending?'<em class="proof-sync">Queued</em>':''}`:`<span>＋<br>Photo ${i+1}</span>`}</button>`}
 function renderOpsIssue(t){$('#appContent').innerHTML=`<div class="ops-home"><form class="panel" id="issueForm"><h3>${esc(t.name)}</h3><div class="form-group"><label>Issue Type</label><select name="type"><option>Material Not Reached</option><option>Manpower Shortage</option><option>Vehicle Delay</option><option>Permission Issue</option><option>Safety Issue</option><option>Other</option></select></div><div class="form-group"><label>Severity</label><select name="severity"><option>High</option><option>Medium</option><option>Low</option><option>Critical</option></select></div><div class="form-group"><label>Remark</label><textarea required name="remark" rows="4"></textarea></div><button class="btn primary full" type="submit" style="background:var(--red)">Send to Admin</button></form></div>`;$('#issueForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);state.issues.unshift({id:'IS-'+Date.now(),task:t.id,title:f.get('remark'),severity:f.get('severity'),status:'Open',time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})});t.issue=f.get('type');if(/critical|high/i.test(f.get('severity')))t.status='Blocked';save();toast('Issue sent to Admin.');navigate('ops-home')}}
+
+
+function renderSharedLogistics(viewer){
+  const rows=(state.vendors||[]);
+  $('#appContent').innerHTML=`<div class="panel">
+    <h3>${viewer==='client'?'SHARED LOGISTICS':'PROJECT LOGISTICS'}</h3>
+    <p>${viewer==='client'?'Only logistics information allowed by Command Center is shown here.':'Live vendor, vehicle, driver, material and ETA information.'}</p>
+    <div class="data-table">
+      <div class="data-head"><span>Vendor</span><span>POC</span><span>Contact</span><span>Vehicle</span><span>Driver</span><span>ETA</span></div>
+      ${rows.map(v=>`<div class="data-row">
+        <b>${esc(v.vendorName||'—')}</b>
+        <span>${esc(v.vendorPoc||'—')}</span>
+        <span>${esc(v.contact||'—')}</span>
+        <span>${esc(v.vehicleNo||'—')}</span>
+        <span>${esc(v.driverNo||'—')}</span>
+        <span>${esc(v.eta||'—')}</span>
+      </div>`).join('')||'<div style="padding:16px">No logistics information shared yet.</div>'}
+    </div>
+  </div>`;
+}
+
+
+function renderTeamDepartmentControl(){
+  state.departments=Array.isArray(state.departments)?state.departments:[];
+  state.team=Array.isArray(state.team)?state.team:[];
+  $('#appContent').innerHTML=`<div class="panel-grid team-dept-grid">
+    <div class="panel">
+      <div class="section-title-row"><div><h3>DEPARTMENTS</h3><p>Create the project departments first.</p></div><button class="btn primary" id="addDeptBtn">+ Create Department</button></div>
+      <div class="stack-list">
+        ${state.departments.map(d=>`<div class="stack-row"><span><b>${esc(d.name||'Department')}</b><small>${esc(d.zone||'')}</small></span><span>${state.team.filter(t=>t.department===d.name).length} member(s)</span><button class="btn ghost" data-delete-dept="${d.id}">Delete</button></div>`).join('')||'<p>No departments created yet.</p>'}
+      </div>
+    </div>
+    <div class="panel">
+      <div class="section-title-row"><div><h3>TEAM MEMBERS</h3><p>Add team members and map them to a department, role and zone.</p></div><button class="btn primary" id="addTeamBtn">+ Add Team Member</button></div>
+      <div class="stack-list">
+        ${state.team.map(t=>`<div class="stack-row"><span><b>${esc(t.name||'Team Member')}</b><small>${esc(t.role||'')} • ${esc(t.department||'')} • ${esc(t.zone||'')}</small></span><span>${esc(t.phone||'')}</span><button class="btn ghost" data-delete-team="${t.id}">Delete</button></div>`).join('')||'<p>No team members added yet.</p>'}
+      </div>
+    </div>
+  </div>`;
+
+  $('#addDeptBtn').onclick=()=>{
+    $('#appContent').innerHTML=`<div class="panel" style="max-width:720px"><h3>CREATE DEPARTMENT</h3>
+      <form id="deptForm"><div class="form-grid">
+        <div class="form-group"><label>Department Name</label><input required name="name" placeholder="Venue / Racecourse / Expo"></div>
+        <div class="form-group"><label>Zone / Area</label><input name="zone" placeholder="Venue 1 / Route A"></div>
+        <div class="form-group span2"><label>Department Scope</label><textarea name="scope" rows="3" placeholder="What this department is responsible for"></textarea></div>
+      </div><button class="btn primary" type="submit">Create Department</button></form></div>`;
+    $('#deptForm').onsubmit=e=>{
+      e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
+      state.departments.push({id:'DEP-'+Date.now().toString(36).toUpperCase(),name:String(f.name||'').trim(),zone:String(f.zone||'').trim(),scope:String(f.scope||'').trim(),status:'Not Started',progress:0});
+      save();toast('Department created.');renderTeamDepartmentControl();
+    };
+  };
+
+  $('#addTeamBtn').onclick=()=>{
+    const opts=state.departments.map(d=>`<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');
+    $('#appContent').innerHTML=`<div class="panel" style="max-width:720px"><h3>ADD TEAM MEMBER</h3>
+      <form id="teamMemberForm"><div class="form-grid">
+        <div class="form-group"><label>Full Name</label><input required name="name"></div>
+        <div class="form-group"><label>Role</label><input required name="role" placeholder="Department Head / Supervisor / Ops"></div>
+        <div class="form-group"><label>Department</label><select required name="department"><option value="">Select Department</option>${opts}</select></div>
+        <div class="form-group"><label>Zone</label><input name="zone"></div>
+        <div class="form-group"><label>Phone</label><input name="phone"></div>
+        <div class="form-group"><label>Email</label><input type="email" name="email"></div>
+      </div><button class="btn primary" type="submit">Add Team Member</button></form></div>`;
+    $('#teamMemberForm').onsubmit=e=>{
+      e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
+      state.team.push({id:'TEAM-'+Date.now().toString(36).toUpperCase(),...f});
+      save();toast('Team member added.');renderTeamDepartmentControl();
+    };
+  };
+
+  $$('[data-delete-dept]').forEach(b=>b.onclick=()=>{
+    const d=state.departments.find(x=>x.id===b.dataset.deleteDept);
+    if(d && state.team.some(t=>t.department===d.name)) return toast('Remove or reassign team members before deleting this department.');
+    state.departments=state.departments.filter(x=>x.id!==b.dataset.deleteDept);save();renderTeamDepartmentControl();toast('Department deleted.');
+  });
+  $$('[data-delete-team]').forEach(b=>b.onclick=()=>{
+    state.team=state.team.filter(x=>x.id!==b.dataset.deleteTeam);save();renderTeamDepartmentControl();toast('Team member removed.');
+  });
+}
+
+function renderContacts(viewer='admin'){
+  state.contacts=Array.isArray(state.contacts)?state.contacts:[];
+  const canEdit=viewer==='admin';
+  $('#appContent').innerHTML=`<div class="panel">
+    <div class="section-title-row">
+      <div><h3>IMPORTANT CONTACTS</h3><p>${canEdit?'Create and control the contact directory for Client and Ops.':'Important project contacts shared by Command Center.'}</p></div>
+      ${canEdit?'<button class="btn primary" id="addContactBtn">+ Add Contact</button>':''}
+    </div>
+    <div class="contact-directory">
+      ${state.contacts.map(c=>`<article class="contact-directory-card">
+        <div class="contact-avatar">${esc((c.name||'C').slice(0,1).toUpperCase())}</div>
+        <div>
+          <h4>${esc(c.name||'Contact')}</h4>
+          <p>${esc(c.role||'')}</p>
+          <small>${esc(c.department||'')}</small>
+        </div>
+        <div class="contact-links">
+          ${c.phone?`<a href="tel:${esc(c.phone)}">${window.MLIcon?MLIcon('phone'):''}${esc(c.phone)}</a>`:''}
+          ${c.email?`<a href="mailto:${esc(c.email)}">${window.MLIcon?MLIcon('message'):''}${esc(c.email)}</a>`:''}
+        </div>
+        ${canEdit?`<div class="contact-admin-actions"><button class="btn ghost" data-edit-contact="${c.id}">Edit</button><button class="btn ghost" data-delete-contact="${c.id}">Delete</button></div>`:''}
+      </article>`).join('')||'<p>No contacts added yet.</p>'}
+    </div>
+  </div>`;
+
+  if(canEdit){
+    const openForm=(contact={})=>{
+      $('#appContent').innerHTML=`<div class="panel" style="max-width:760px">
+        <h3>${contact.id?'EDIT CONTACT':'ADD CONTACT'}</h3>
+        <form id="contactForm"><div class="form-grid">
+          <div class="form-group"><label>Name</label><input required name="name" value="${esc(contact.name||'')}"></div>
+          <div class="form-group"><label>Role / Designation</label><input required name="role" value="${esc(contact.role||'')}"></div>
+          <div class="form-group"><label>Department</label><input name="department" value="${esc(contact.department||'')}"></div>
+          <div class="form-group"><label>Phone</label><input name="phone" value="${esc(contact.phone||'')}"></div>
+          <div class="form-group span2"><label>Email</label><input type="email" name="email" value="${esc(contact.email||'')}"></div>
+        </div><button class="btn primary" type="submit">Save Contact</button></form>
+      </div>`;
+      $('#contactForm').onsubmit=e=>{
+        e.preventDefault();
+        const f=Object.fromEntries(new FormData(e.target));
+        if(contact.id){
+          const i=state.contacts.findIndex(x=>x.id===contact.id);
+          if(i>=0) state.contacts[i]={...state.contacts[i],...f};
+        }else{
+          state.contacts.unshift({id:'CON-'+Date.now().toString(36).toUpperCase(),...f});
+        }
+        save();toast('Contact saved.');renderContacts('admin');
+      };
+    };
+    $('#addContactBtn').onclick=()=>openForm({});
+    $$('[data-edit-contact]').forEach(b=>b.onclick=()=>{
+      const c=state.contacts.find(x=>x.id===b.dataset.editContact); if(c) openForm(c);
+    });
+    $$('[data-delete-contact]').forEach(b=>b.onclick=()=>{
+      state.contacts=state.contacts.filter(x=>x.id!==b.dataset.deleteContact);save();renderContacts('admin');toast('Contact deleted.');
+    });
+  }
+}
 
 function renderVendors(){
   state.vendors=Array.isArray(state.vendors)?state.vendors:[];
@@ -620,6 +816,182 @@ function fieldRow(f,i){return `<div class="field-row" data-field-index="${i}"><i
 function renderProofs(){const pending=state.tasks.filter(t=>t.status==='Finished'&&!t.verified);$('#appContent').innerHTML=`<div class="proof-grid">${pending.map(t=>proofAdminCard(t)).join('')||'<div class="panel"><p>No proof awaiting verification.</p></div>'}</div>`;$$('[data-verify]').forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===b.dataset.verify);t.verified=true;save();renderProofs();toast('Task verified. Client visibility updated.');});$$('[data-rework]').forEach(b=>b.onclick=()=>{const t=state.tasks.find(x=>x.id===b.dataset.rework);const reason=prompt('Rework reason:','Please upload clearer proof and recheck alignment.');if(reason){t.status='Working';t.verified=false;state.messages.push({thread:t.id,from:'admin',to:'ops',text:'Rework required: '+reason,time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})});save();renderProofs();toast('Rework sent to Ops.')}})}
 function proofAdminCard(t){const p=t.proofs[0]?.data;return `<div class="proof-card"><div class="proof-photo" style="${p?`background-image:url('${p}')`:''}">${p?'':'VERIFIED PHOTO / PROOF'}</div><div class="proof-body"><span class="status amber">PENDING VERIFICATION</span><h4>${esc(t.name)}</h4><p>${t.id} • ${esc(t.department)} • ${t.proofs.length} proof(s)<br>${esc(t.remark||'No remark')}</p><div class="proof-actions"><button class="verify" data-verify="${t.id}">✓ VERIFY</button><button class="rework" data-rework="${t.id}">↻ REWORK</button></div></div></div>`}
 function proofClientCard(t){const p=t.proofs[0]?.data;return `<div class="proof-card"><div class="proof-photo" style="${p?`background-image:url('${p}')`:''}">${p?'':'VERIFIED GROUND PROOF'}</div><div class="proof-body"><span class="status green">✓ VERIFIED</span><h4>${esc(t.name)}</h4><p>${esc(t.department)} • ${esc(t.zone)}</p></div></div>`}
+
+function applyLandingContent(content){
+  const c={...structuredClone(DEFAULT_LANDING_CONTENT),...(content||{})};
+  c.contact={...DEFAULT_LANDING_CONTENT.contact,...(c.contact||{})};
+  c.fonts={...DEFAULT_LANDING_CONTENT.fonts,...(c.fonts||{})};
+
+  const root=document.documentElement;
+  root.style.setProperty('--landing-heading-font', c.fonts.heading || 'Manrope');
+  root.style.setProperty('--landing-body-font', c.fonts.body || 'Inter');
+  root.style.setProperty('--landing-hero-scale', c.fonts.heroSize==='large'?'1.10':c.fonts.heroSize==='compact'?'.90':'1');
+
+  const setText=(id,val)=>{const el=document.getElementById(id);if(el&&val!=null)el.textContent=val;};
+  setText('landingEyebrow',c.eyebrow);
+  setText('landingHeroLine1',c.heroLine1);
+  setText('landingHeroLine2',c.heroLine2);
+  setText('landingHeroDescription',c.heroDescription);
+  setText('landingAboutTitle',c.aboutTitle);
+  setText('landingAboutDescription',c.aboutDescription);
+  setText('landingContactTitle',c.contact.title);
+  setText('landingContactCompany',c.contact.company);
+  setText('landingContactOffice',c.contact.office);
+  setText('landingContactPhone',c.contact.phone);
+  setText('landingContactEmail',c.contact.email);
+
+  const metricGrid=document.getElementById('landingMetricGrid');
+  if(metricGrid && Array.isArray(c.metrics)){
+    metricGrid.innerHTML=c.metrics.map(m=>`<div><strong>${esc(m.value||'')}</strong><span>${esc(m.label||'')}</span></div>`).join('');
+  }
+
+  const gallery=document.getElementById('landingDepartmentGallery');
+  if(gallery && Array.isArray(c.departments)){
+    gallery.innerHTML=c.departments.map(d=>`<article class="gallery-card" data-dept-card="${esc(d.key||'')}"><img src="${esc(d.image||'marathon-liveops-hero.png')}" alt="${esc(d.label||'Execution Department')}"><span><i>${window.MLIcon?MLIcon(d.icon||'image'):''}</i><b>${esc(d.label||'Execution Department')}</b></span></article>`).join('');
+  }
+}
+async function syncPublicLandingContent(){
+  try{
+    const remote=await window.LiveOpsCloud?.loadPublicSiteContent?.();
+    if(remote){
+      state.landingContent={...state.landingContent,...remote};
+      localStorage.setItem(STORE,JSON.stringify(state));
+    }
+  }catch(err){
+    console.warn('Public site content is using the local/default copy.',err);
+  }
+  applyLandingContent(state.landingContent);
+}
+
+async function landingImageToDataUrl(file){
+  if(!file) return '';
+  if(!/^image\//i.test(file.type||'')) throw new Error('Please select an image file.');
+  if(file.size>12*1024*1024) throw new Error('Image is too large. Please use a file under 12 MB.');
+  const raw=await new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Could not read image.'));r.readAsDataURL(file);
+  });
+  const img=await new Promise((resolve,reject)=>{
+    const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(new Error('Could not process image.'));i.src=raw;
+  });
+  const maxW=1200,maxH=800;
+  const scale=Math.min(1,maxW/(img.naturalWidth||1),maxH/(img.naturalHeight||1));
+  const w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale));
+  const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+  canvas.getContext('2d').drawImage(img,0,0,w,h);
+  return canvas.toDataURL('image/jpeg',.72);
+}
+
+
+function reportSnapshot(){
+  const p=state.project||{};
+  const tasks=state.tasks||[];
+  const verified=tasks.filter(t=>t.verified).length;
+  const finished=tasks.filter(t=>t.status==='Finished').length;
+  const issues=state.issues||[];
+  const proofs=tasks.reduce((n,t)=>n+(Array.isArray(t.proofs)?t.proofs.length:0),0);
+  const departments=[...new Set(tasks.map(t=>t.department).filter(Boolean))];
+  return {p,tasks,verified,finished,issues,proofs,departments,date:new Date().toLocaleString()};
+}
+function pdfEscape(s){return String(s||'').replace(/[\\()]/g,'\\$&').replace(/[\r\n]+/g,' ');}
+function buildAutoPdf(){
+  const r=reportSnapshot();
+  const lines=[
+    'MARATHON LIVEOPS - EXECUTION REPORT',
+    r.p.name||'Project Report',
+    'Location: '+(r.p.location||'-'),
+    'Event: '+([r.p.date,r.p.time].filter(Boolean).join('  ')||'-'),
+    'Generated: '+r.date,
+    '',
+    'SUMMARY',
+    'Readiness: '+(r.p.readiness||0)+'%',
+    'Total Tasks: '+r.tasks.length,
+    'Finished Tasks: '+r.finished,
+    'Verified Proof Tasks: '+r.verified,
+    'Uploaded Proof Photos: '+r.proofs,
+    'Issues: '+r.issues.length,
+    '',
+    'DEPARTMENT STATUS',
+    ...(r.departments.length?r.departments:['No departments yet']).map(d=>{
+      const dt=r.tasks.filter(t=>t.department===d);const done=dt.filter(t=>t.status==='Finished').length;
+      return d+': '+done+'/'+dt.length+' finished';
+    }),
+    '',
+    'TASKS',
+    ...(r.tasks.length?r.tasks.slice(0,28).map(t=>`${t.id||''} | ${t.name||''} | ${t.department||''} | ${t.status||''} | ${t.progress||0}% | Proofs: ${(t.proofs||[]).length}`):['No tasks yet.']),
+    '',
+    'This report is automatically generated from live updates, proof uploads and Command Center verification data.'
+  ];
+  const content=['BT','/F1 18 Tf','50 790 Td','(MARATHON LIVEOPS EXECUTION REPORT) Tj','/F1 10 Tf','0 -28 Td'];
+  lines.slice(1,55).forEach((line,i)=>{content.push('('+pdfEscape(line).slice(0,95)+') Tj');content.push('0 -16 Td');});
+  content.push('ET');
+  const stream=content.join('\n');
+  const objs=[];
+  function obj(s){objs.push(s);return objs.length;}
+  obj('<< /Type /Catalog /Pages 2 0 R >>');
+  obj('<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+  obj('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>');
+  obj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+  obj('<< /Length '+stream.length+' >>\nstream\n'+stream+'\nendstream');
+  let pdf='%PDF-1.4\n';const xref=[0];
+  objs.forEach((o,i)=>{xref.push(pdf.length);pdf+=(i+1)+' 0 obj\n'+o+'\nendobj\n';});
+  const start=pdf.length;pdf+='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n';xref.slice(1).forEach(x=>pdf+=String(x).padStart(10,'0')+' 00000 n \n');pdf+='trailer << /Size '+(objs.length+1)+' /Root 1 0 R >>\nstartxref\n'+start+'\n%%EOF';
+  return new Blob([pdf],{type:'application/pdf'});
+}
+function buildAutoPptHtml(){
+  const r=reportSnapshot();
+  const slide=(title,body)=>`<section><h1>${esc(title)}</h1>${body}</section>`;
+  const taskRows=r.tasks.slice(0,18).map(t=>`<tr><td>${esc(t.id||'')}</td><td>${esc(t.name||'')}</td><td>${esc(t.department||'')}</td><td>${esc(t.status||'')}</td><td>${esc(String(t.progress||0))}%</td><td>${(t.proofs||[]).length}</td></tr>`).join('');
+  const proofImgs=r.tasks.flatMap(t=>(t.proofs||[]).map(p=>p.data||p.localData).filter(Boolean)).slice(0,6).map(src=>`<img src="${src}">`).join('');
+  return `<!doctype html><html><head><meta charset="utf-8"><style>@page{size:13.333in 7.5in;margin:0}body{margin:0;font-family:Arial;background:#f4f1eb;color:#071525}section{width:13.333in;height:7.5in;box-sizing:border-box;padding:.55in;page-break-after:always;background:#f7f4ee}h1{font-size:34pt;margin:0 0 .25in}.hero{background:#071525;color:#fff}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.18in}.kpi{background:white;border-radius:.12in;padding:.22in;color:#071525}.kpi b{font-size:28pt;color:#246bfe}table{width:100%;border-collapse:collapse;background:white}td,th{border:1px solid #dce3ea;padding:.09in;font-size:10pt}.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:.15in}.photos img{width:100%;height:1.75in;object-fit:cover;border-radius:.1in}</style></head><body>`+
+    slide(r.p.name||'Execution Report',`<div class="hero" style="padding:.55in;border-radius:.18in"><h1>${esc(r.p.name||'Marathon LiveOps')}</h1><p>${esc(r.p.location||'')} • ${esc([r.p.date,r.p.time].filter(Boolean).join(' • '))}</p><h2>Final Race Execution Report</h2><p>Generated ${esc(r.date)}</p></div>`)+
+    slide('Execution Summary',`<div class="kpis"><div class="kpi"><b>${r.p.readiness||0}%</b><br>Readiness</div><div class="kpi"><b>${r.tasks.length}</b><br>Total Tasks</div><div class="kpi"><b>${r.verified}</b><br>Verified</div><div class="kpi"><b>${r.proofs}</b><br>Proof Photos</div></div>`)+
+    slide('Task Status Register',`<table><tr><th>ID</th><th>Task</th><th>Dept</th><th>Status</th><th>Progress</th><th>Proofs</th></tr>${taskRows||'<tr><td colspan="6">No tasks yet.</td></tr>'}</table>`)+
+    slide('Verified Proof Gallery',`<div class="photos">${proofImgs||'<p>No proof photos uploaded yet.</p>'}</div>`)+
+    `</body></html>`;
+}
+function downloadAutoReport(kind){
+  const r=reportSnapshot();
+  const safe=(r.p.name||'marathon-liveops').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  let blob,filename;
+  if(kind==='pdf'){blob=buildAutoPdf();filename=safe+'-auto-execution-report.pdf';}
+  else{blob=new Blob([buildAutoPptHtml()],{type:'application/vnd.ms-powerpoint'});filename=safe+'-auto-execution-report.ppt';}
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function documentAudienceAllows(doc,viewer){
+  const a=doc.audience||'both';
+  return viewer==='admin'||a==='both'||a===viewer;
+}
+function formatBytes(bytes){
+  const n=Number(bytes||0);
+  if(!n) return '';
+  if(n<1024*1024) return Math.max(1,Math.round(n/1024))+' KB';
+  return (n/1024/1024).toFixed(1)+' MB';
+}
+async function downloadProjectDocument(doc){
+  try{
+    let url=doc.url||'';
+    if(doc.path && window.LiveOpsCloud?.getDocumentUrl) url=await LiveOpsCloud.getDocumentUrl(doc.path);
+    if(!url) throw new Error('Download link is not available.');
+    const a=document.createElement('a');
+    a.href=url;a.target='_blank';a.rel='noopener';a.download=doc.fileName||doc.title||'project-document';
+    document.body.appendChild(a);a.click();a.remove();
+  }catch(err){toast(err?.message||'Document could not be downloaded.');}
+}
+function renderDocuments(viewer){
+  const docs=(state.documents||[]).filter(d=>documentAudienceAllows(d,viewer));
+  $('#appContent').innerHTML=`<div class="document-centre">
+    <div class="document-centre-head"><div><h3>PROJECT DOCUMENT CENTRE</h3><p>Approved PPT/PDF files and automatic execution report.</p></div><div class="document-auto-actions"><button class="btn ghost" id="autoPdfDoc">Auto PDF</button><button class="btn ghost" id="autoPptDoc">Auto PPT</button></div></div>
+    <div class="document-grid">${docs.map(d=>`<article class="document-card">
+      <div class="document-type ${/pdf/i.test(d.fileType||d.fileName||'')?'pdf':'ppt'}">${window.MLIcon?MLIcon('document'):''}<b>${/pdf/i.test(d.fileType||d.fileName||'')?'PDF':'PPT'}</b></div>
+      <div class="document-copy"><h4>${esc(d.title||d.fileName||'Document')}</h4><p>${esc(d.fileName||'')} ${d.size?'• '+formatBytes(d.size):''}</p><small>${esc(d.uploadedAtLabel||'')}</small></div>
+      <button class="btn ghost document-download" data-doc-download="${esc(d.id)}">${window.MLIcon?MLIcon('download'):''}<span>Download</span></button>
+    </article>`).join('')||'<div class="panel"><p>No documents have been shared yet.</p></div>'}</div>
+  </div>`;
+  $$('[data-doc-download]').forEach(b=>b.onclick=()=>{const d=state.documents.find(x=>x.id===b.dataset.docDownload);if(d)downloadProjectDocument(d);});
+  const pdfBtn=$('#autoPdfDoc');if(pdfBtn)pdfBtn.onclick=()=>downloadAutoReport('pdf');
+  const pptBtn=$('#autoPptDoc');if(pptBtn)pptBtn.onclick=()=>downloadAutoReport('ppt');
+}
 function chatThreadFor(viewer){
   if(viewer==='client') return 'client-general';
   if(viewer==='ops') return session.selectedTask||'ops-general';
@@ -705,6 +1077,8 @@ function renderChat(viewer){
     renderChat(viewer);
   };
 }
+syncPublicLandingContent();
+
 function exportTasksCSV(){const rows=[['ID','Task','Department','Zone','Priority','Status','Progress','Deadline','Verified'],...state.tasks.map(t=>[t.id,t.name,t.department,t.zone,t.priority,t.status,t.progress,t.deadline,t.verified])];const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='marathon-liveops-tasks.csv';a.click();URL.revokeObjectURL(url);toast('CSV exported.')}
 
 // Production-mode indicator: never disguise demo/local mode as a connected live backend.

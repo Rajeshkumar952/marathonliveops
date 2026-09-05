@@ -1,4 +1,4 @@
-const CACHE='liveops-v8-logo-chat-20260905';
+const CACHE='liveops-v11-team-logistics-contacts-20260905';
 const SHELL=['./','./index.html','./styles.css','./app.js','./cloud.js','./resilience.js','./config.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const k of await caches.keys()){if(k!==CACHE)await caches.delete(k);}await self.clients.claim();})()));

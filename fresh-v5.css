@@ -685,3 +685,214 @@
     max-height:34dvh;
   }
 }
+
+
+/* =========================================================
+   MARATHON LIVEOPS UPGRADE V9
+   Desktop Ops + Nile Mile branding + SVG icons + CMS + docs
+   ========================================================= */
+.ui-svg{
+  width:1em;height:1em;display:inline-block;vertical-align:-.12em;flex:0 0 auto;
+}
+.company-logo-mark{
+  background:#fff !important;
+  overflow:hidden !important;
+  padding:3px !important;
+}
+.company-logo-mark img{
+  width:100% !important;height:100% !important;object-fit:contain !important;display:block !important;
+}
+#publicNav .brand-mark.company-logo-mark{box-shadow:0 0 0 1px #e2e8ef !important}
+.side-brand .brand-mark.company-logo-mark{
+  width:44px;height:44px;min-width:44px;border-radius:11px !important;
+}
+.side-nav .ico{
+  display:flex !important;align-items:center !important;justify-content:center !important;
+}
+.side-nav .ico .ui-svg{width:15px;height:15px;stroke-width:2}
+.navlinks a span{display:inline-flex;align-items:center;justify-content:center;margin-right:7px !important}
+.navlinks a .ui-svg{width:14px;height:14px}
+.line-icon .ui-svg{width:22px;height:22px}
+.ops-icon b{display:flex !important;align-items:center;justify-content:center}
+.ops-icon b .ui-svg{width:24px;height:24px}
+.cc-project-tool b{display:flex !important;align-items:center;gap:7px}
+.cc-project-tool b .ui-svg{width:16px;height:16px;color:#2f6cf4}
+.btn .ui-svg,.document-download .ui-svg{width:14px;height:14px;margin-right:6px}
+
+/* True laptop workspace for every logged-in role. */
+@media(min-width:821px){
+  #appShell:not(.hidden){
+    display:grid !important;
+    grid-template-columns:230px minmax(0,1fr) !important;
+    width:100% !important;
+    min-height:100vh !important;
+  }
+  #appShell:not(.hidden) #sidebar{
+    display:block !important;
+    position:sticky !important;
+    top:0 !important;
+    left:auto !important;
+    transform:none !important;
+    width:230px !important;
+    max-width:none !important;
+    height:100vh !important;
+    padding:22px 15px !important;
+    overflow-y:auto !important;
+  }
+  #appShell:not(.hidden) .workspace{
+    width:100% !important;min-width:0 !important;
+  }
+  .ops-home{
+    width:100% !important;
+    max-width:1180px !important;
+    margin:0 auto !important;
+  }
+  .ops-icons{
+    grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+    gap:12px !important;
+  }
+  .ops-icon{
+    min-height:112px !important;
+    font-size:11px !important;
+  }
+  .ops-banner{padding:26px 30px !important}
+  .ops-banner h2{font-size:28px !important}
+}
+
+/* Department execution gallery */
+.landing-dept-gallery{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:14px !important;
+  margin-top:34px !important;
+}
+.landing-dept-gallery .gallery-card{
+  height:245px !important;
+  position:relative !important;
+  overflow:hidden !important;
+  background:#0b1d31 !important;
+}
+.landing-dept-gallery .gallery-card img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+}
+.landing-dept-gallery .gallery-card:after{
+  content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,18,32,.88),rgba(5,18,32,.05) 70%);
+}
+.landing-dept-gallery .gallery-card span{
+  position:absolute !important;z-index:3 !important;left:18px !important;right:18px !important;bottom:18px !important;
+  display:flex !important;align-items:center !important;gap:9px !important;color:#fff !important;
+}
+.landing-dept-gallery .gallery-card span i{display:flex;width:24px;height:24px;align-items:center;justify-content:center}
+.landing-dept-gallery .gallery-card span .ui-svg{width:20px;height:20px}
+.landing-dept-gallery .gallery-card span b{font:800 13px/1.25 Manrope,sans-serif}
+
+/* Website control */
+.website-control-layout{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+.website-control-form h4,.website-gallery-control h3{font:800 12px Manrope;margin:22px 0 10px}
+.section-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.section-title-row h3{margin:0 0 5px}
+.section-title-row p{margin:0}
+.website-metric-editor{display:grid;gap:8px}
+.metric-editor-row{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px}
+.metric-editor-row input{width:100%}
+.website-gallery-editor{display:grid;gap:9px;margin-top:14px}
+.website-gallery-row{
+  display:grid;grid-template-columns:82px minmax(0,1fr) auto;gap:12px;align-items:center;
+  border:1px solid #e2e8ef;border-radius:12px;padding:9px;background:#fff;
+}
+.website-gallery-row img{width:82px;height:58px;object-fit:cover;border-radius:9px}
+.website-gallery-row b{display:block;font-size:10px}
+.website-gallery-row small{display:block;margin-top:4px;color:#778391;font-size:8px;text-transform:uppercase}
+.website-gallery-row label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+
+/* Document centre */
+.document-centre-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:14px}
+.document-grid{display:grid;gap:10px}
+.document-card{
+  display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;
+  border:1px solid #dfe6ed;border-radius:14px;padding:14px;background:#fff;
+}
+.document-type{
+  width:56px;height:64px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  background:#edf4ff;color:#245fd7;
+}
+.document-type.pdf{background:#fff0f0;color:#c33a3a}
+.document-type .ui-svg{width:22px;height:22px}
+.document-type b{font-size:9px}
+.document-copy h4{margin:0 0 5px;font:800 12px Manrope}
+.document-copy p{margin:0;color:#667585;font-size:9px}
+.document-copy small{display:block;margin-top:5px;color:#86919d;font-size:8px}
+.document-download,.document-admin-actions .btn{display:inline-flex !important;align-items:center !important}
+.document-admin-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.report-doc-grid{grid-template-columns:1fr 1fr !important}
+
+@media(max-width:1100px){
+  .landing-dept-gallery{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  .website-control-layout{grid-template-columns:1fr}
+}
+@media(max-width:820px){
+  .landing-dept-gallery{grid-template-columns:1fr !important}
+  .landing-dept-gallery .gallery-card{height:220px !important}
+  .website-control-layout{grid-template-columns:1fr}
+  .metric-editor-row{grid-template-columns:90px minmax(0,1fr)}
+  .website-gallery-row{grid-template-columns:68px minmax(0,1fr)}
+  .website-gallery-row img{width:68px;height:52px}
+  .website-gallery-row label{grid-column:1/-1;justify-content:center}
+  .document-card{grid-template-columns:54px minmax(0,1fr)}
+  .document-type{width:50px;height:58px}
+  .document-download,.document-admin-actions{grid-column:1/-1;width:100%}
+  .document-download{justify-content:center !important}
+  .document-admin-actions{justify-content:stretch}
+  .document-admin-actions .btn{flex:1;justify-content:center}
+  .report-doc-grid{grid-template-columns:1fr !important}
+}
+
+
+/* UPGRADE V10: public font controls, dynamic dept, reports */
+:root{--landing-heading-font:Manrope;--landing-body-font:Inter;--landing-hero-scale:1}
+#publicSite,#publicNav{font-family:var(--landing-body-font),Inter,system-ui,sans-serif!important}
+#publicSite h1,#publicSite h2,#publicSite h3,#publicSite .gallery-card b,#publicNav .brand strong{font-family:var(--landing-heading-font),Manrope,Inter,sans-serif!important}
+#publicSite .hero h1{font-size:calc(clamp(54px,7vw,92px)*var(--landing-hero-scale))!important}
+.add-dept-form{display:grid;grid-template-columns:minmax(0,1fr) 120px auto;gap:8px;margin:14px 0 12px}
+.add-dept-form input,.add-dept-form select,.dept-name-input{width:100%;border:1px solid #dbe3ec;border-radius:10px;padding:10px 11px;font:700 11px Inter;background:#fff}
+.website-gallery-row{grid-template-columns:82px minmax(0,1fr) auto auto!important}
+.document-auto-actions{display:flex;gap:8px;flex-wrap:wrap}.document-auto-actions .btn{min-height:38px}.document-centre-head{align-items:flex-start}
+@media(max-width:820px){#publicSite .hero h1{font-size:calc(clamp(38px,11.2vw,48px)*var(--landing-hero-scale))!important}.add-dept-form{grid-template-columns:1fr}.website-gallery-row{grid-template-columns:68px minmax(0,1fr)!important}.website-gallery-row label,.website-gallery-row button{grid-column:1/-1}.document-centre-head{flex-direction:column}.document-auto-actions{width:100%}.document-auto-actions .btn{flex:1}}
+
+
+/* =========================================================
+   V11 LOGISTICS + CONTACTS + DEPARTMENT & TEAM CONTROL
+   ========================================================= */
+.contact-directory{display:grid;gap:10px;margin-top:14px}
+.contact-directory-card{
+  display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;gap:12px;align-items:center;
+  border:1px solid #dfe6ed;border-radius:14px;background:#fff;padding:12px 14px;
+}
+.contact-avatar{
+  width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  background:#eaf2ff;color:#235ed2;font:800 15px Manrope;
+}
+.contact-directory-card h4{margin:0 0 3px;font:800 11px Manrope}
+.contact-directory-card p{margin:0;font-size:9px;color:#5f6f80}
+.contact-directory-card small{display:block;margin-top:3px;color:#84909c;font-size:8px}
+.contact-links{display:flex;flex-direction:column;gap:5px;min-width:170px}
+.contact-links a{display:flex;align-items:center;gap:6px;color:#1e5ecf;text-decoration:none;font-size:9px}
+.contact-links .ui-svg{width:13px;height:13px}
+.contact-admin-actions{display:flex;gap:6px}
+
+.team-dept-grid{grid-template-columns:1fr 1fr !important}
+.stack-list{display:grid;gap:8px;margin-top:14px}
+.stack-row{
+  display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;
+  border:1px solid #e2e8ef;border-radius:11px;padding:10px 12px;background:#fff;
+}
+.stack-row b{display:block;font-size:10px}
+.stack-row small{display:block;margin-top:4px;color:#7d8894;font-size:8px}
+
+@media(max-width:820px){
+  .contact-directory-card{grid-template-columns:44px minmax(0,1fr)}
+  .contact-links,.contact-admin-actions{grid-column:1/-1;min-width:0}
+  .contact-admin-actions .btn{flex:1}
+  .team-dept-grid{grid-template-columns:1fr !important}
+  .stack-row{grid-template-columns:1fr}
+}

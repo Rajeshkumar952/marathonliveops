@@ -50,14 +50,18 @@
   function installMenu(){
     if(typeof menus==='undefined') return;
     menus.admin=[
-      ['dashboard','▦','Dashboard'],
-      ['projects','▣','Projects'],
-      ['access-control','♟','Access Control'],
-      ['issues','!','Issues'],
-      ['ops-control','⌁','Ops Control'],
-      ['client-control','◉','Client Control'],
-      ['reports','▥','Reports & Archive'],
-      ['settings','⚙','Settings']
+      ['dashboard','dashboard','Dashboard'],
+      ['projects','project','Projects'],
+      ['access-control','users','Access Control'],
+      ['team-setup','users','Department & Team'],
+      ['issues','alert','Issues'],
+      ['ops-control','sliders','Ops Control'],
+      ['client-control','eye','Client Control'],
+      ['logistics-control','truck','Logistics Control'],
+      ['contacts-control','phone','Contacts'],
+      ['website-control','globe','Website Control'],
+      ['reports','archive','Reports & Archive'],
+      ['settings','settings','Settings']
     ];
   }
 
@@ -113,11 +117,11 @@
           'Readiness: <b>'+(state.project.readiness||0)+'%</b></p>'+
           '<div class="bar"><i style="width:'+(state.project.readiness||0)+'%"></i></div></div>'+
         '<div class="cc-project-actions">'+
-          '<button class="cc-project-tool" data-tool="tasks"><b>✓ Tasks</b><small>Create, assign, prioritize and close work.</small></button>'+
-          '<button class="cc-project-tool" data-tool="fields"><b>＋ Forms & Fields</b><small>Define exactly what Ops must submit.</small></button>'+
-          '<button class="cc-project-tool" data-tool="vendors"><b>▤ Vendors & Logistics</b><small>Vendor, vehicle, driver, material and ETA setup.</small></button>'+
-          '<button class="cc-project-tool" data-tool="proof-rules"><b>▧ Proof Rules</b><small>Photo count, live-camera, GPS and verification controls.</small></button>'+
-          '<button class="cc-project-tool" data-tool="client-control"><b>◉ Client Visibility</b><small>Choose what the client is allowed to see.</small></button>'+
+          '<button class="cc-project-tool" data-tool="tasks"><b>'+(window.MLIcon?MLIcon('task'):'')+' Tasks</b><small>Create, assign, prioritize and close work.</small></button>'+
+          '<button class="cc-project-tool" data-tool="fields"><b>'+(window.MLIcon?MLIcon('sliders'):'')+' Forms & Fields</b><small>Define exactly what Ops must submit.</small></button>'+
+          '<button class="cc-project-tool" data-tool="vendors"><b>'+(window.MLIcon?MLIcon('truck'):'')+' Vendors & Logistics</b><small>Vendor, vehicle, driver, material and ETA setup.</small></button>'+
+          '<button class="cc-project-tool" data-tool="proof-rules"><b>'+(window.MLIcon?MLIcon('camera'):'')+' Proof Rules</b><small>Photo count, live-camera, GPS and verification controls.</small></button>'+
+          '<button class="cc-project-tool" data-tool="client-control"><b>'+(window.MLIcon?MLIcon('eye'):'')+' Client Visibility</b><small>Choose what the client is allowed to see.</small></button>'+
         '</div>';
       qa('[data-tool]').forEach(b=>b.onclick=()=>navigate(b.dataset.tool));
       q('#ccNewProject').onclick=()=>createProjectSetup(false);
@@ -197,14 +201,106 @@
       qa('[data-client-request]').forEach(b=>b.onclick=()=>{state.approvals.unshift({id:'AP-'+Date.now(),title:b.dataset.clientRequest,type:b.dataset.clientRequest,status:'Pending',note:'Requested by Command Center.'});save();toast('Client request created.');});
     };
 
-    pages.reports=function(){
-      setHead('Reports & Archive','Download project records and retain completed projects.');
+
+
+    pages['team-setup']=function(){
+      setHead('Department & Team','Create departments first, then build the project team and map every person.');
+      renderTeamDepartmentControl();
+    };
+
+    pages['logistics-control']=function(){
+      setHead('Logistics Control','Manage logistics and decide whether Ops/Client can see the information.');
+      const clientVisible=state.clientRules?.vendorContacts!==false;
+      const opsVisible=state.opsRules?.contacts!==false;
       q('#appContent').innerHTML=
-        '<div class="panel-grid">'+
-          '<div class="panel"><h3>CURRENT PROJECT REPORT</h3><p>'+esc(state.project.name)+' • '+state.project.readiness+'% readiness • '+state.tasks.length+' tasks</p><div class="cc-export-grid"><button class="cc-export">PDF</button><button class="cc-export">Excel</button><button class="cc-export">PowerPoint</button><button class="cc-export">CSV</button></div></div>'+
-          '<div class="panel"><h3>PROJECT ARCHIVE</h3><p>'+(state.archivedProjects?.length||0)+' archived project(s).</p>'+((state.archivedProjects||[]).slice(0,8).map(a=>'<div class="cc-control-line"><span><b>'+esc(a.project?.name||'Project')+'</b><br><small>'+esc(a.project?.eventDay||'')+' • '+esc(a.project?.location||'')+'</small></span><span class="status blue">ARCHIVED</span></div>').join('')||'<p>No archived projects yet.</p>')+'</div>'+
+        '<div class="cc-control-grid">'+
+          '<div class="panel"><h3>VISIBILITY</h3>'+
+            '<div class="cc-control-line"><span>Show Logistics to Ops</span><button class="cc-switch '+(opsVisible?'on':'')+'" id="toggleOpsLogistics">'+(opsVisible?'SHOW':'HIDE')+'</button></div>'+
+            '<div class="cc-control-line"><span>Show Logistics to Client</span><button class="cc-switch '+(clientVisible?'on':'')+'" id="toggleClientLogistics">'+(clientVisible?'SHOW':'HIDE')+'</button></div>'+
+            '<button class="btn primary" id="manageLogisticsBtn" style="margin-top:14px">Manage Logistics Records</button>'+
+          '</div>'+
+          '<div class="panel"><h3>WHAT CLIENT / OPS WILL SEE</h3><p>Vendor, POC, contact, vehicle number, driver number, material and ETA from the shared logistics records.</p></div>'+
         '</div>';
-      qa('.cc-export').forEach(b=>b.onclick=()=>toast(b.textContent+' export will be generated from Reports.'));
+      q('#toggleOpsLogistics').onclick=()=>{state.opsRules.contacts=!state.opsRules.contacts;save();pages['logistics-control']();toast('Ops logistics visibility updated.');};
+      q('#toggleClientLogistics').onclick=()=>{state.clientRules.vendorContacts=!state.clientRules.vendorContacts;save();pages['logistics-control']();toast('Client logistics visibility updated.');};
+      q('#manageLogisticsBtn').onclick=()=>navigate('vendors');
+    };
+
+    pages['contacts-control']=function(){
+      setHead('Contacts','Create and manage the contact directory visible to Client and Ops.');
+      renderContacts('admin');
+    };
+
+    pages['website-control']=function(){
+      setHead('Website Control','Update public page text, font, metrics, departments and photographs.');
+      state.landingContent={...structuredClone(DEFAULT_LANDING_CONTENT),...(state.landingContent||{})};
+      state.landingContent.contact={...DEFAULT_LANDING_CONTENT.contact,...(state.landingContent.contact||{})};
+      state.landingContent.fonts={...DEFAULT_LANDING_CONTENT.fonts,...(state.landingContent.fonts||{})};
+      const c=state.landingContent;
+      const metrics=(c.metrics||[]).slice(0,8); while(metrics.length<4) metrics.push({value:'',label:''});
+      const fontOptions=['Manrope','Inter','Poppins','Montserrat','Arial','Georgia'];
+      q('#appContent').innerHTML=
+        '<div class="website-control-layout">'+
+          '<form class="panel website-control-form" id="websiteControlForm">'+
+            '<div class="section-title-row"><div><h3>PUBLIC LANDING PAGE</h3><p>Change the content, numbers and font without touching code.</p></div><span class="status green">LIVE EDIT</span></div>'+
+            '<h4>Text Font</h4><div class="form-grid">'+
+              '<div class="form-group"><label>Heading Font</label><select name="headingFont">'+fontOptions.map(f=>'<option '+(c.fonts.heading===f?'selected':'')+'>'+f+'</option>').join('')+'</select></div>'+
+              '<div class="form-group"><label>Body Font</label><select name="bodyFont">'+fontOptions.map(f=>'<option '+(c.fonts.body===f?'selected':'')+'>'+f+'</option>').join('')+'</select></div>'+
+              '<div class="form-group"><label>Hero Title Size</label><select name="heroSize"><option value="compact" '+(c.fonts.heroSize==='compact'?'selected':'')+'>Compact</option><option value="default" '+((c.fonts.heroSize||'default')==='default'?'selected':'')+'>Default</option><option value="large" '+(c.fonts.heroSize==='large'?'selected':'')+'>Large</option></select></div>'+
+            '</div>'+
+            '<h4>Hero</h4><div class="form-grid">'+
+              '<div class="form-group"><label>Eyebrow</label><input name="eyebrow" value="'+esc(c.eyebrow||'')+'"></div>'+
+              '<div class="form-group"><label>Headline Line 1</label><input name="heroLine1" value="'+esc(c.heroLine1||'')+'"></div>'+
+              '<div class="form-group"><label>Headline Line 2</label><input name="heroLine2" value="'+esc(c.heroLine2||'')+'"></div>'+
+              '<div class="form-group span2"><label>Hero Description</label><textarea name="heroDescription" rows="3">'+esc(c.heroDescription||'')+'</textarea></div>'+
+            '</div>'+
+            '<h4>About</h4><div class="form-grid">'+
+              '<div class="form-group span2"><label>About Heading</label><input name="aboutTitle" value="'+esc(c.aboutTitle||'')+'"></div>'+
+              '<div class="form-group span2"><label>About Description</label><textarea name="aboutDescription" rows="3">'+esc(c.aboutDescription||'')+'</textarea></div>'+
+            '</div>'+
+            '<h4>Public Metrics</h4><div class="website-metric-editor">'+metrics.map((m,i)=>'<div class="metric-editor-row"><input name="metricValue'+i+'" placeholder="6+" value="'+esc(m.value||'')+'"><input name="metricLabel'+i+'" placeholder="Marathons Delivered" value="'+esc(m.label||'')+'"></div>').join('')+'</div>'+
+            '<h4>Contact</h4><div class="form-grid">'+
+              '<div class="form-group"><label>Contact Title</label><input name="contactTitle" value="'+esc(c.contact.title||'')+'"></div>'+
+              '<div class="form-group"><label>Company Line</label><input name="contactCompany" value="'+esc(c.contact.company||'')+'"></div>'+
+              '<div class="form-group span2"><label>Office</label><input name="contactOffice" value="'+esc(c.contact.office||'')+'"></div>'+
+              '<div class="form-group"><label>Phone</label><input name="contactPhone" value="'+esc(c.contact.phone||'')+'"></div>'+
+              '<div class="form-group"><label>Email</label><input name="contactEmail" value="'+esc(c.contact.email||'')+'"></div>'+
+            '</div>'+
+            '<button class="btn primary" type="submit">Save & Publish Landing Page</button>'+
+          '</form>'+
+          '<div class="panel website-gallery-control"><h3>EXECUTION DEPARTMENTS</h3><p>Add, delete, rename and upload real execution photos.</p>'+
+            '<form id="addLandingDept" class="add-dept-form"><input name="label" placeholder="New department name" required><select name="icon"><option value="image">Image</option><option value="water">Hydration</option><option value="barricade">Barricade</option><option value="users">Manpower</option><option value="truck">Transport</option><option value="route">Route</option><option value="toilet">Toilet</option><option value="culture">Culture</option></select><button class="btn ghost">+ Add Dept.</button></form>'+
+            '<div class="website-gallery-editor">'+(c.departments||[]).map((d,i)=>'<article class="website-gallery-row" data-landing-dept="'+esc(d.key)+'">'+
+              '<img src="'+esc(d.image||'')+'" alt=""><div><input class="dept-name-input" data-dept-name="'+esc(d.key)+'" value="'+esc(d.label||'')+'"><small>'+esc(d.key||'')+'</small></div>'+
+              '<label class="btn ghost">'+(window.MLIcon?MLIcon('upload'):'')+' Photo<input class="hidden" type="file" accept="image/*" data-landing-photo="'+esc(d.key)+'"></label>'+
+              '<button class="btn ghost" data-delete-dept="'+esc(d.key)+'">Delete</button></article>').join('')+'</div>'+
+          '</div>'+
+        '</div>';
+      q('#websiteControlForm').onsubmit=async e=>{
+        e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
+        state.landingContent={...state.landingContent,eyebrow:String(f.eyebrow||'').trim(),heroLine1:String(f.heroLine1||'').trim(),heroLine2:String(f.heroLine2||'').trim(),heroDescription:String(f.heroDescription||'').trim(),aboutTitle:String(f.aboutTitle||'').trim(),aboutDescription:String(f.aboutDescription||'').trim(),fonts:{heading:String(f.headingFont||'Manrope'),body:String(f.bodyFont||'Inter'),heroSize:String(f.heroSize||'default')},metrics:[0,1,2,3,4,5,6,7].map(i=>({value:String(f['metricValue'+i]||'').trim(),label:String(f['metricLabel'+i]||'').trim()})).filter(m=>m.value||m.label),contact:{title:String(f.contactTitle||'').trim(),company:String(f.contactCompany||'').trim(),office:String(f.contactOffice||'').trim(),phone:String(f.contactPhone||'').trim(),email:String(f.contactEmail||'').trim()}};
+        save();applyLandingContent(state.landingContent);try{await LiveOpsCloud?.savePublicSiteContent?.(state.landingContent);toast('Landing page saved and published.');}catch(err){toast('Saved internally. Run Supabase upgrade to publish publicly.');}
+      };
+      q('#addLandingDept').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));const label=String(f.label||'').trim();if(!label)return;const key=label.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now().toString(36).slice(-3);state.landingContent.departments.push({key,label,icon:f.icon||'image',image:'marathon-liveops-hero.png'});save();applyLandingContent(state.landingContent);pages['website-control']();toast('Department added.');};
+      qa('[data-dept-name]').forEach(inp=>inp.onchange=()=>{const d=state.landingContent.departments.find(x=>x.key===inp.dataset.deptName);if(d){d.label=inp.value.trim()||d.label;save();applyLandingContent(state.landingContent);}});
+      qa('[data-delete-dept]').forEach(b=>b.onclick=()=>{state.landingContent.departments=state.landingContent.departments.filter(d=>d.key!==b.dataset.deleteDept);save();applyLandingContent(state.landingContent);pages['website-control']();toast('Department removed.');});
+      qa('[data-landing-photo]').forEach(input=>input.onchange=async()=>{const file=input.files?.[0];if(!file)return;try{const data=await landingImageToDataUrl(file);const dep=state.landingContent.departments.find(d=>d.key===input.dataset.landingPhoto);if(dep)dep.image=data;save();applyLandingContent(state.landingContent);try{await LiveOpsCloud?.savePublicSiteContent?.(state.landingContent);}catch(_){}toast('Department photo updated.');pages['website-control']();}catch(err){toast(err?.message||'Photo could not be updated.');}});
+    };
+
+    pages.reports=function(){
+      setHead('Reports & Archive','Manual upload plus automatic race execution PDF/PPT report.');
+      const docs=state.documents||[];
+      q('#appContent').innerHTML=
+        '<div class="panel-grid report-doc-grid">'+
+          '<div class="panel"><h3>1) CUSTOM FILE UPLOAD</h3><p>Upload any PPT/PDF made by Command Center for Client/Ops download.</p><form id="projectDocumentForm"><div class="form-group"><label>Document Title</label><input required name="title" placeholder="Final Event Execution Report"></div><div class="form-group"><label>Who can download?</label><select name="audience"><option value="both">Client + Ops Team</option><option value="client">Client Only</option><option value="ops">Ops Team Only</option></select></div><div class="form-group"><label>PPT / PDF File</label><input required id="projectDocumentFile" type="file" accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"></div><button class="btn primary" type="submit">'+(window.MLIcon?MLIcon('upload'):'')+' Upload & Share</button></form></div>'+
+          '<div class="panel"><h3>2) AUTO EXECUTION REPORT</h3><p>Generated from task updates, proof counts, issue list, verification status and uploaded proof gallery.</p><div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">'+stat('TASKS',state.tasks.length)+stat('PROOFS',state.tasks.reduce((n,t)=>n+(t.proofs||[]).length,0),'green')+stat('ISSUES',state.issues.length,'amber')+'</div><div class="page-actions" style="margin-top:18px"><button class="btn primary" id="autoReportPdf">Download Auto PDF</button><button class="btn ghost" id="autoReportPpt">Download Auto PPT</button></div><small>The PPT opens in PowerPoint as an editable slide-style report.</small></div>'+
+        '</div>'+
+        '<div class="panel" style="margin-top:16px"><div class="section-title-row"><div><h3>SHARED DOCUMENTS</h3><p>Client and Ops see clean document cards with Download button.</p></div><span class="status blue">'+docs.length+' FILES</span></div><div class="document-grid admin-document-grid">'+docs.map(d=>'<article class="document-card"><div class="document-type '+(/pdf/i.test(d.fileType||d.fileName||'')?'pdf':'ppt')+'">'+(window.MLIcon?MLIcon('document'):'')+'<b>'+(/pdf/i.test(d.fileType||d.fileName||'')?'PDF':'PPT')+'</b></div><div class="document-copy"><h4>'+esc(d.title||d.fileName)+'</h4><p>'+esc(d.fileName||'')+(d.size?' • '+formatBytes(d.size):'')+'</p><small>'+esc(d.audience||'both')+' • '+esc(d.uploadedAtLabel||'')+'</small></div><div class="document-admin-actions"><button class="btn ghost" data-doc-download="'+esc(d.id)+'">'+(window.MLIcon?MLIcon('download'):'')+' Download</button><button class="btn ghost" data-doc-delete="'+esc(d.id)+'">Delete</button></div></article>').join('')||'<p>No documents uploaded yet.</p>'+'</div></div>';
+      q('#autoReportPdf').onclick=()=>downloadAutoReport('pdf');
+      q('#autoReportPpt').onclick=()=>downloadAutoReport('ppt');
+      q('#projectDocumentForm').onsubmit=async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));const file=q('#projectDocumentFile').files?.[0];if(!file)return toast('Choose a PPT or PDF file.');const allowed=/pdf|powerpoint|presentation/i.test(file.type||'')||/\.(pdf|ppt|pptx)$/i.test(file.name||'');if(!allowed)return toast('Only PDF, PPT or PPTX files are allowed.');if(file.size>40*1024*1024)return toast('Please keep the file under 40 MB.');const btn=e.target.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent='Uploading…';try{const uploaded=await LiveOpsCloud.uploadDocument(file);state.documents.unshift({id:'DOC-'+Date.now().toString(36).toUpperCase(),title:String(f.title||file.name).trim(),audience:f.audience||'both',fileName:file.name,fileType:file.type,size:file.size,path:uploaded.path,uploadedAt:new Date().toISOString(),uploadedAtLabel:new Date().toLocaleDateString()});save();toast('Document uploaded and shared.');pages.reports();}catch(err){toast(err?.message||'Document upload failed.');}finally{btn.disabled=false;}};
+      qa('[data-doc-download]').forEach(b=>b.onclick=()=>{const d=state.documents.find(x=>x.id===b.dataset.docDownload);if(d)downloadProjectDocument(d);});
+      qa('[data-doc-delete]').forEach(b=>b.onclick=async()=>{const d=state.documents.find(x=>x.id===b.dataset.docDelete);if(!d)return;if(!confirm('Delete this shared document?'))return;try{if(d.path)await LiveOpsCloud?.removeDocument?.(d.path);}catch(err){}state.documents=state.documents.filter(x=>x.id!==d.id);save();pages.reports();toast('Document deleted.');});
     };
 
     pages.settings=function(){
