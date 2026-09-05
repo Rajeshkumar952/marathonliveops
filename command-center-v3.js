@@ -106,7 +106,7 @@
         return;
       }
       q('#appContent').innerHTML=
-        '<div class="page-actions"><button class="btn ghost" id="ccEditProject">Edit Project</button></div>'+
+        '<div class="page-actions"><button class="btn primary" id="ccNewProject">+ Create New Project</button><button class="btn ghost" id="ccEditProject">Edit Current Project</button></div>'+
         '<div class="panel"><h3>'+esc(state.project.name)+'</h3><p>'+
           (state.project.location?esc(state.project.location)+' • ':'')+
           (state.project.eventDay?esc(state.project.eventDay)+' • ':'')+
@@ -116,10 +116,11 @@
           '<button class="cc-project-tool" data-tool="tasks"><b>✓ Tasks</b><small>Create, assign, prioritize and close work.</small></button>'+
           '<button class="cc-project-tool" data-tool="fields"><b>＋ Forms & Fields</b><small>Define exactly what Ops must submit.</small></button>'+
           '<button class="cc-project-tool" data-tool="vendors"><b>▤ Vendors & Logistics</b><small>Vendor, vehicle, driver, material and ETA setup.</small></button>'+
-          '<button class="cc-project-tool" data-tool="proof"><b>▧ Proof Rules</b><small>Photo count, verification and evidence controls.</small></button>'+
+          '<button class="cc-project-tool" data-tool="proof-rules"><b>▧ Proof Rules</b><small>Photo count, live-camera, GPS and verification controls.</small></button>'+
           '<button class="cc-project-tool" data-tool="client-control"><b>◉ Client Visibility</b><small>Choose what the client is allowed to see.</small></button>'+
         '</div>';
       qa('[data-tool]').forEach(b=>b.onclick=()=>navigate(b.dataset.tool));
+      q('#ccNewProject').onclick=()=>createProjectSetup(false);
       q('#ccEditProject').onclick=()=>createProjectSetup(true);
     };
 
@@ -138,20 +139,62 @@
     };
 
     pages['ops-control']=function(){
-      setHead('Ops Control','Decide what Ops can see, edit, submit and prove.');
+      setHead('Ops Control','Decide exactly what Ops can see, edit, submit and prove.');
+      state.opsRules={...DEFAULT_OPS_RULES,...(state.opsRules||{})};
+      const rows=[
+        ['assignedWorkOnly','Assigned work only'],
+        ['statusUpdate','Status update'],
+        ['specificLocation','Specific location / zone'],
+        ['liveCameraProof','Live-camera proof'],
+        ['gpsProof','GPS with proof'],
+        ['updateRemarks','Update remarks'],
+        ['issueEscalation','Issue escalation'],
+        ['instructions','Admin instructions'],
+        ['chat','Command Center chat'],
+        ['contacts','Important contacts']
+      ];
       q('#appContent').innerHTML=
         '<div class="cc-control-grid">'+
-          '<div class="panel"><h3>OPS VISIBILITY</h3>'+
-            ['Assigned work only','Status update','Specific location','Live-camera proof','GPS with proof','Update remarks','Issue escalation','Command Center chatbot'].map(x=>'<div class="cc-control-line"><span>'+x+'</span><button class="cc-switch on">ON</button></div>').join('')+
+          '<div class="panel"><h3>OPS ACCESS & VISIBILITY</h3>'+
+            rows.map(([k,l])=>'<div class="cc-control-line"><span>'+l+'</span><button class="cc-switch '+(state.opsRules[k]?'on':'')+'" data-ops-rule="'+k+'">'+(state.opsRules[k]?'ON':'OFF')+'</button></div>').join('')+
           '</div>'+
-          '<div class="panel"><h3>DEFAULT PROOF POLICY</h3><p><b>Completion flow</b><br><br>UPDATE → PROOF → ADMIN VERIFY → CLIENT VISIBILITY</p><p>Photo quantity, GPS requirement and mandatory fields will be configured per project/task.</p></div>'+
+          '<div class="panel"><h3>PROJECT PROOF POLICY</h3><p><b>Completion flow</b><br><br>UPDATE → PROOF → COMMAND CENTER VERIFY → CLIENT VISIBILITY</p><p>Minimum photos: <b>'+(state.proofRules?.minPhotos??3)+'</b><br>GPS: <b>'+(state.proofRules?.gpsRequired?'Required':'Optional')+'</b><br>Live camera: <b>'+(state.proofRules?.liveCamera?'Required':'Optional')+'</b></p><button class="btn ghost" id="openProofRules">Edit Proof Rules</button></div>'+
         '</div>';
+      qa('[data-ops-rule]').forEach(b=>b.onclick=()=>{const k=b.dataset.opsRule;state.opsRules[k]=!state.opsRules[k];save();pages['ops-control']();toast('Ops control updated.');});
+      q('#openProofRules').onclick=()=>navigate('proof-rules');
     };
 
     pages['client-control']=function(){
       setHead('Client Control','Choose exactly what information is visible in Client Login.');
-      const rows=['Event name / logo / location / date / time','Overall project readiness','Department progress','Verified photos only','Approvals','Approved documents','Reports','Client ↔ Command Center messages'];
-      q('#appContent').innerHTML='<div class="panel"><h3>CLIENT VISIBILITY CONTROL</h3>'+rows.map(x=>'<div class="cc-control-line"><span>'+x+'</span><button class="cc-switch on">SHOW</button></div>').join('')+'</div>';
+      state.clientRules={...DEFAULT_CLIENT_RULES,...(state.clientRules||{})};
+      const rows=[
+        ['eventIdentity','Event name / logo / location / date / time'],
+        ['overall','Overall project readiness'],
+        ['departments','Department progress'],
+        ['approvedProof','Verified photos / proof only'],
+        ['approvals','Approvals & information requests'],
+        ['documents','Approved documents'],
+        ['reports','Reports'],
+        ['messages','Client ↔ Command Center messages'],
+        ['support','Support'],
+        ['vendorContacts','Vendor contact details'],
+        ['internalRemarks','Internal remarks'],
+        ['unverifiedIssues','Unverified issues']
+      ];
+      q('#appContent').innerHTML=
+        '<div class="cc-control-grid">'+
+          '<div class="panel"><h3>CLIENT VISIBILITY CONTROL</h3>'+
+            rows.map(([k,l])=>'<div class="cc-control-line"><span>'+l+'</span><button class="cc-switch '+(state.clientRules[k]?'on':'')+'" data-client-rule="'+k+'">'+(state.clientRules[k]?'SHOW':'HIDE')+'</button></div>').join('')+
+          '</div>'+
+          '<div class="panel"><h3>CLIENT ACTION REQUESTS</h3><p>Request a client action without exposing internal operations.</p><div class="action-grid">'+
+            '<button class="action-btn" data-client-request="Approve artwork">+ Approve artwork</button>'+
+            '<button class="action-btn" data-client-request="Upload sponsor logo">+ Upload sponsor logo</button>'+
+            '<button class="action-btn" data-client-request="Confirm quantity">+ Confirm quantity</button>'+
+            '<button class="action-btn" data-client-request="Add response">+ Add remark / response</button>'+
+          '</div></div>'+
+        '</div>';
+      qa('[data-client-rule]').forEach(b=>b.onclick=()=>{const k=b.dataset.clientRule;state.clientRules[k]=!state.clientRules[k];save();pages['client-control']();toast('Client visibility updated.');});
+      qa('[data-client-request]').forEach(b=>b.onclick=()=>{state.approvals.unshift({id:'AP-'+Date.now(),title:b.dataset.clientRequest,type:b.dataset.clientRequest,status:'Pending',note:'Requested by Command Center.'});save();toast('Client request created.');});
     };
 
     pages.reports=function(){
@@ -159,7 +202,7 @@
       q('#appContent').innerHTML=
         '<div class="panel-grid">'+
           '<div class="panel"><h3>CURRENT PROJECT REPORT</h3><p>'+esc(state.project.name)+' • '+state.project.readiness+'% readiness • '+state.tasks.length+' tasks</p><div class="cc-export-grid"><button class="cc-export">PDF</button><button class="cc-export">Excel</button><button class="cc-export">PowerPoint</button><button class="cc-export">CSV</button></div></div>'+
-          '<div class="panel"><h3>FINISHED PROJECT ARCHIVE</h3><p>Completed projects will remain searchable here with their final status and downloadable records.</p></div>'+
+          '<div class="panel"><h3>PROJECT ARCHIVE</h3><p>'+(state.archivedProjects?.length||0)+' archived project(s).</p>'+((state.archivedProjects||[]).slice(0,8).map(a=>'<div class="cc-control-line"><span><b>'+esc(a.project?.name||'Project')+'</b><br><small>'+esc(a.project?.eventDay||'')+' • '+esc(a.project?.location||'')+'</small></span><span class="status blue">ARCHIVED</span></div>').join('')||'<p>No archived projects yet.</p>')+'</div>'+
         '</div>';
       qa('.cc-export').forEach(b=>b.onclick=()=>toast(b.textContent+' export will be generated from Reports.'));
     };
@@ -176,29 +219,164 @@
     };
   }
 
+  function chatbotRole(){
+    return (typeof session!=='undefined' && ['admin','ops','client'].includes(session?.role)) ? session.role : null;
+  }
+
+  function chatbotCanSee(role,m){
+    if(role==='admin') return true;
+    return m.from===role || m.to===role;
+  }
+
+  function chatbotDefaultThread(role){
+    if(role==='client') return 'client-general';
+    if(role==='ops') return session.selectedTask || 'ops-general';
+    const incoming=[...(state.messages||[])].reverse().find(m=>m.to==='admin');
+    return incoming?.thread || 'ops-general';
+  }
+
+  function chatbotUnread(role){
+    return (state.messages||[]).filter(m=>
+      m.to===role && !(Array.isArray(m.readBy)&&m.readBy.includes(role))
+    ).length;
+  }
+
+  function markChatbotThreadRead(role,thread){
+    let changed=false;
+    (state.messages||[]).forEach(m=>{
+      if(m.thread===thread && m.to===role){
+        m.readBy=Array.isArray(m.readBy)?m.readBy:[];
+        if(!m.readBy.includes(role)){m.readBy.push(role);changed=true;}
+      }
+    });
+    if(changed && typeof save==='function') save();
+  }
+
+  function renderChatbot(){
+    const role=chatbotRole();
+    const panel=q('#ccChatPanel');
+    const fab=q('#ccChatFab');
+    if(!role || !panel || !fab) return;
+
+    const allowed=(state.messages||[]).filter(m=>chatbotCanSee(role,m));
+    let threads=[...new Set(allowed.map(m=>m.thread).filter(Boolean))];
+    if(role==='ops'&&!threads.includes('ops-general')) threads.unshift('ops-general');
+    if(role==='client'&&!threads.includes('client-general')) threads.unshift('client-general');
+    if(role==='admin'&&!threads.length) threads=['ops-general','client-general'];
+
+    let selected=panel.dataset.thread || chatbotDefaultThread(role);
+    if(!threads.includes(selected)) threads.unshift(selected);
+    panel.dataset.thread=selected;
+
+    markChatbotThreadRead(role,selected);
+
+    const messages=(state.messages||[]).filter(m=>chatbotCanSee(role,m)&&m.thread===selected);
+    const title=role==='admin'?'Command Center Chat':role==='ops'?'Ops ↔ Command Center':'Client ↔ Command Center';
+
+    panel.innerHTML=
+      '<div class="cc-chatbot-head"><strong>'+title+'</strong><button id="ccChatClose">×</button></div>'+
+      '<div class="cc-chatbot-body">'+
+        '<div class="cc-chatbot-tabs">'+threads.map(t=>{
+          const unread=(state.messages||[]).filter(m=>m.thread===t&&m.to===role&&!(m.readBy||[]).includes(role)).length;
+          return '<button type="button" class="cc-chat-tab '+(t===selected?'active':'')+'" data-bot-thread="'+esc(t)+'">'+esc(t)+(unread?' ('+unread+')':'')+'</button>';
+        }).join('')+'</div>'+
+        '<div class="cc-chatbot-messages">'+
+          (messages.map(m=>'<div class="cc-bot-bubble '+(m.from===role?'me':'')+'">'+esc(m.text)+'<small>'+String(m.from||'').toUpperCase()+' • '+esc(m.time||'')+'</small></div>').join('') || '<p class="cc-chat-empty">No messages yet. Start the conversation.</p>')+
+        '</div>'+
+        '<form id="ccBotForm" class="cc-bot-compose"><input required placeholder="Type a message…"><button type="submit">Send</button></form>'+
+      '</div>';
+
+    q('#ccChatClose').onclick=()=>panel.classList.add('hidden');
+    qa('[data-bot-thread]',panel).forEach(b=>b.onclick=()=>{
+      panel.dataset.thread=b.dataset.botThread;
+      renderChatbot();
+    });
+    q('#ccBotForm').onsubmit=e=>{
+      e.preventDefault();
+      const input=e.target.querySelector('input');
+      const text=input.value.trim();
+      if(!text) return;
+
+      let to='admin';
+      if(role==='admin'){
+        const historical=(state.messages||[]).filter(m=>m.thread===selected);
+        to=selected.startsWith('client')||historical.some(m=>m.from==='client'||m.to==='client')?'client':'ops';
+      }
+
+      state.messages.push({
+        id:'MSG-'+Date.now().toString(36).toUpperCase(),
+        thread:selected,
+        from:role,
+        to,
+        text,
+        time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+        createdAt:new Date().toISOString(),
+        readBy:[role]
+      });
+      save();
+      input.value='';
+      renderChatbot();
+      updateChatbot();
+    };
+
+    const badge=q('.cc-badge',fab);
+    if(badge){
+      const n=chatbotUnread(role);
+      badge.textContent=String(n);
+      badge.classList.toggle('hidden',n===0);
+    }
+  }
+
   function installChatbot(){
     if(q('#ccChatFab')) return;
     const fab=document.createElement('button');
-    fab.id='ccChatFab'; fab.className='cc-chatbot-fab hidden';
-    fab.innerHTML='✉<span class="cc-badge">0</span>';
+    fab.id='ccChatFab';
+    fab.className='cc-chatbot-fab hidden';
+    fab.setAttribute('aria-label','Open project chat');
+    fab.innerHTML='✉<span class="cc-badge hidden">0</span>';
+
     const panel=document.createElement('div');
-    panel.id='ccChatPanel'; panel.className='cc-chatbot-panel hidden';
-    panel.innerHTML='<div class="cc-chatbot-head"><strong>Project Chatbot</strong><button id="ccChatClose">×</button></div><div class="cc-chatbot-body"><div class="cc-thread"><b>Ops Messages</b><small>Operational team conversations appear here.</small></div><div class="cc-thread"><b>Client Messages</b><small>Client conversations appear separately here.</small></div></div>';
+    panel.id='ccChatPanel';
+    panel.className='cc-chatbot-panel hidden';
+
     document.body.append(fab,panel);
-    fab.onclick=()=>panel.classList.toggle('hidden');
-    q('#ccChatClose').onclick=()=>panel.classList.add('hidden');
+
+    fab.onclick=()=>{
+      panel.classList.toggle('hidden');
+      if(!panel.classList.contains('hidden')) renderChatbot();
+    };
   }
 
   function updateChatbot(){
     installChatbot();
-    const show=(typeof session!=='undefined' && session?.role==='admin' && !q('#appShell')?.classList.contains('hidden'));
+    const role=chatbotRole();
+    const show=!!role && !q('#appShell')?.classList.contains('hidden');
     q('#ccChatFab')?.classList.toggle('hidden',!show);
-    if(!show) q('#ccChatPanel')?.classList.add('hidden');
+    if(!show){
+      q('#ccChatPanel')?.classList.add('hidden');
+      return;
+    }
+    const badge=q('#ccChatFab .cc-badge');
+    if(badge){
+      const n=chatbotUnread(role);
+      badge.textContent=String(n);
+      badge.classList.toggle('hidden',n===0);
+    }
+    if(!q('#ccChatPanel')?.classList.contains('hidden')) renderChatbot();
   }
 
   installMenu();
   installPages();
   installChatbot();
+
+  if(typeof save==='function'){
+    const originalSaveForChatbot=save;
+    save=function(){
+      const result=originalSaveForChatbot.apply(this,arguments);
+      setTimeout(updateChatbot,0);
+      return result;
+    };
+  }
   configureHeader();
 
   if(typeof buildSidebar==='function'){

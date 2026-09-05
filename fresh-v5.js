@@ -13,11 +13,16 @@
 
   function project(){
     const p=(typeof state!=='undefined' && state?.project) ? state.project : {};
+    const eventWhen=safe(
+      p.eventDay || [p.date,p.time].filter(Boolean).join(' • '),
+      'Event Date'
+    );
     return {
       name:safe(p.name,'Marathon LiveOps Event'),
-      location:safe(p.eventLocation,'Kolkata'),
-      eventDate:safe(p.eventDate || p.eventDay,'Event Date'),
-      logo:safe(p.eventLogo,'TS')
+      location:safe(p.location || p.eventLocation,'Kolkata'),
+      eventWhen,
+      logo:safe(p.eventLogo,'TS'),
+      logoData:safe(p.eventLogoData,'')
     };
   }
 
@@ -76,26 +81,33 @@
 
     const p=project();
 
-    const originalTitle=header.firstElementChild;
-    if(originalTitle && !originalTitle.classList.contains('ml-event-head')){
-      originalTitle.style.display='none';
+    /* The page title/subtitle remain in the DOM only for navigation/back logic.
+       They must never be shown in the logged-in header. */
+    const pageCopy=q('.page-heading-copy',header) || q('#pageTitle',header)?.parentElement;
+    if(pageCopy){
+      pageCopy.classList.add('page-heading-copy');
+      pageCopy.style.display='none';
     }
 
     let eventHead=q('.ml-event-head',header);
     if(!eventHead){
       eventHead=document.createElement('div');
       eventHead.className='ml-event-head';
-      header.insertBefore(eventHead,header.firstChild);
+      header.insertBefore(eventHead,actions);
     }
 
-    const desiredName=p.name;
-    if(eventHead.dataset.name!==desiredName || eventHead.dataset.location!==p.location){
-      eventHead.dataset.name=desiredName;
-      eventHead.dataset.location=p.location;
+    const signature=[p.name,p.eventWhen,p.location,p.logo,p.logoData].join('|');
+    if(eventHead.dataset.signature!==signature){
+      eventHead.dataset.signature=signature;
       eventHead.innerHTML=
-        '<div class="ml-event-logo">'+p.logo+'</div>'+
-        '<div><div class="ml-event-name">'+p.name+'</div>'+
-        '<div class="ml-event-location">⌖ '+p.location+'</div></div>';
+        '<div class="ml-event-logo">'+(p.logoData?'<img src="'+p.logoData+'" alt="Event logo">':p.logo)+'</div>'+
+        '<div class="ml-event-copy">'+
+          '<div class="ml-event-name">'+p.name+'</div>'+
+          '<div class="ml-event-meta">'+
+            '<span class="ml-event-when">'+p.eventWhen+'</span>'+
+            '<span class="ml-event-location">⌖ '+p.location+'</span>'+
+          '</div>'+
+        '</div>';
     }
 
     const acct=q('#accountIdentity',actions);
@@ -112,16 +124,11 @@
       actions.prepend(c);
     }
 
-    if(!q('#mlEventDateCard',actions)){
-      const d=document.createElement('div');
-      d.id='mlEventDateCard';
-      d.className='ml-event-date-card';
-      d.innerHTML='<small>Event Date</small><strong id="mlEventDate"></strong>';
-      const live=q('.live-pill',actions);
-      actions.insertBefore(d,live || actions.firstChild);
-    }
+    /* Event date is now part of the marathon details block.
+       Remove any old standalone Event Date card left by a previous version. */
+    const oldEventDate=q('#mlEventDateCard',actions);
+    if(oldEventDate) oldEventDate.remove();
 
-    if(q('#mlEventDate')) q('#mlEventDate').textContent=p.eventDate;
     tickClock();
   }
 
