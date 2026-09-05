@@ -8,21 +8,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260903-clean2" />
+  <link rel="stylesheet" href="styles.css?v=20260905-current-main-rootfix" />
   <link rel="stylesheet" href="login-v2.css?v=20260903-clean2" />
   <link rel="stylesheet" href="fresh-v5.css?v=20260903-clean2" />
-<link rel="stylesheet" href="responsive-approved.css?v=20260904-phonefix02">
 </head>
 <body>
-<button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">×</button>
-  <div id="toast" class="toast" aria-live="polite"></div>
+<div id="toast" class="toast" aria-live="polite"></div>
 
   <header class="topbar" id="publicNav">
     <a class="brand" href="#home" aria-label="Marathon LiveOps home">
       <span class="brand-mark">ML</span>
       <span><strong>Marathon LiveOps</strong><small>Marathon Operations Technology</small></span>
     </a>
-    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu">☰</button><nav class="navlinks">
+    <button class="mobile-menu-toggle" id="mloPublicMenuButton" type="button" aria-label="Open menu" aria-controls="mobilePublicPanel" aria-expanded="false">☰</button><nav class="navlinks">
       <a href="#home"><span>⌂</span>Home</a>
       <a href="#how"><span>↻</span>How It Works</a>
       <a href="#about"><span>◎</span>About Us</a>
@@ -34,6 +32,20 @@
       <button class="icon-btn" title="Admin login" data-open-login="admin">⚙</button>
     </div>
   </header>
+
+  <div id="mobilePublicPanel" class="mlo-public-mobile-panel" aria-hidden="true">
+    <nav class="mlo-public-mobile-links" aria-label="Mobile navigation">
+      <a href="#home">Home</a>
+      <a href="#how">How It Works</a>
+      <a href="#about">About Us</a>
+      <a href="#contact">Let's Connect</a>
+    </nav>
+    <div class="mlo-public-mobile-logins">
+      <button type="button" data-mobile-login="client">Client Login</button>
+      <button type="button" data-mobile-login="ops">Ops Login</button>
+      <button type="button" data-mobile-login="admin">Command Center</button>
+    </div>
+  </div>
 
   <main id="publicSite">
     <section class="hero" id="home">
@@ -155,96 +167,109 @@
   <script src="login-v2.js?v=20260903-clean2"></script>
   <script src="command-center-v3.js?v=20260903-clean2"></script>
   <script src="fresh-v5.js?v=20260903-clean2"></script>
-  <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js?v=20260903-clean2",{updateViaCache:"none"}).then(r=>r.update()).catch(console.warn));}</script>
+  <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js?v=20260905-current-main-rootfix",{updateViaCache:"none"}).then(r=>r.update()).catch(console.warn));}</script>
+
 
 
 <script>
-(function mobileResponsiveController(){
-  const $ = (s, root=document) => root.querySelector(s);
+(function MarathonLiveOpsMobile(){
+  const MAX = 820;
+  const body = document.body;
+  const menuBtn = document.getElementById('mloPublicMenuButton');
+  const menuPanel = document.getElementById('mobilePublicPanel');
 
-  function closePublicMenu(){
-    document.body.classList.remove('mobile-menu-open');
-    const btn = $('#mobileMenuToggle');
-    if(btn){
-      btn.textContent = '☰';
-      btn.setAttribute('aria-label','Open menu');
-    }
+  function setPublicMenu(open){
+    if(!menuBtn || !menuPanel) return;
+    const active = !!open && window.innerWidth <= MAX;
+    menuPanel.classList.toggle('is-open', active);
+    menuPanel.setAttribute('aria-hidden', active ? 'false' : 'true');
+    menuBtn.setAttribute('aria-expanded', active ? 'true' : 'false');
+    menuBtn.setAttribute('aria-label', active ? 'Close menu' : 'Open menu');
+    menuBtn.textContent = active ? '×' : '☰';
+    body.classList.toggle('mlo-public-menu-open', active);
   }
 
-  function togglePublicMenu(){
-    const open = !document.body.classList.contains('mobile-menu-open');
-    document.body.classList.toggle('mobile-menu-open', open);
-    const btn = $('#mobileMenuToggle');
-    if(btn){
-      btn.textContent = open ? '×' : '☰';
-      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    }
-  }
-
-  function buildMobileLoginActions(){
-    const nav = $('#publicNav .navlinks');
-    if(!nav || nav.querySelector('.mlo-mobile-login-actions')) return;
-
-    const wrap = document.createElement('div');
-    wrap.className = 'mlo-mobile-login-actions';
-
-    [
-      ['Client Login','client'],
-      ['Ops Login','ops'],
-      ['Command Center','admin']
-    ].forEach(([label,role])=>{
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = role === 'admin' ? 'btn primary' : (role === 'ops' ? 'btn primary' : 'btn ghost');
-      b.textContent = label;
-      b.addEventListener('click',()=>{
-        closePublicMenu();
-        const original = document.querySelector('[data-open-login="'+role+'"]');
-        if(original) original.click();
-      });
-      wrap.appendChild(b);
+  if(menuBtn && menuPanel){
+    menuBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      setPublicMenu(!menuPanel.classList.contains('is-open'));
     });
 
-    nav.appendChild(wrap);
+    menuPanel.querySelectorAll('a[href^="#"]').forEach(function(a){
+      a.addEventListener('click', function(){ setPublicMenu(false); });
+    });
+
+    menuPanel.querySelectorAll('[data-mobile-login]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        const role = btn.getAttribute('data-mobile-login');
+        setPublicMenu(false);
+        const original = document.querySelector('[data-open-login="' + role + '"]');
+        if(original) original.click();
+      });
+    });
   }
 
-  document.addEventListener('DOMContentLoaded', buildMobileLoginActions);
-  buildMobileLoginActions();
+  function ensureAppMenuButton(){
+    const header = document.querySelector('#appShell .app-header');
+    if(!header || document.getElementById('mobileAppMenuToggle')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'mobileAppMenuToggle';
+    btn.type = 'button';
+    btn.className = 'mlo-app-menu-toggle';
+    btn.setAttribute('aria-label','Open dashboard menu');
+    btn.setAttribute('aria-expanded','false');
+    btn.textContent = '☰';
+    header.insertBefore(btn, header.firstChild);
+
+    btn.addEventListener('click', function(e){
+      if(window.innerWidth > MAX) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const open = !body.classList.contains('mlo-app-menu-open');
+      body.classList.toggle('mlo-app-menu-open', open);
+      btn.textContent = open ? '×' : '☰';
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.setAttribute('aria-label', open ? 'Close dashboard menu' : 'Open dashboard menu');
+    });
+  }
+
+  function closeAppMenu(){
+    body.classList.remove('mlo-app-menu-open');
+    const btn = document.getElementById('mobileAppMenuToggle');
+    if(btn){
+      btn.textContent = '☰';
+      btn.setAttribute('aria-expanded','false');
+      btn.setAttribute('aria-label','Open dashboard menu');
+    }
+  }
+
+  ensureAppMenuButton();
 
   document.addEventListener('click', function(e){
-    if(window.innerWidth <= 820 && e.target.closest('#mobileMenuToggle')){
-      e.preventDefault();
-      togglePublicMenu();
+    if(window.innerWidth <= MAX && e.target.closest('#sidebar [data-page]')){
+      setTimeout(closeAppMenu, 0);
       return;
     }
 
-    if(window.innerWidth <= 820 && document.body.classList.contains('mobile-menu-open') && e.target.closest('#publicNav .navlinks > a')){
-      closePublicMenu();
-    }
-
-    if(window.innerWidth <= 820 && e.target.closest('.app-header') && !e.target.closest('button,a,input,select,textarea')){
-      const h = e.target.closest('.app-header');
-      const r = h.getBoundingClientRect();
-      if(e.clientX - r.left < 64){
-        document.body.classList.add('app-menu-open');
-      }
-    }
-
-    if(document.body.classList.contains('app-menu-open') &&
-       !e.target.closest('.sidebar') &&
-       !e.target.closest('.app-header')){
-      document.body.classList.remove('app-menu-open');
-    }
-
-    if(e.target.closest('.side-nav button')){
-      document.body.classList.remove('app-menu-open');
+    if(window.innerWidth <= MAX &&
+       body.classList.contains('mlo-app-menu-open') &&
+       !e.target.closest('#sidebar') &&
+       !e.target.closest('#mobileAppMenuToggle')){
+      closeAppMenu();
     }
   });
 
-  window.addEventListener('resize',()=>{
-    if(window.innerWidth > 820){
-      closePublicMenu();
-      document.body.classList.remove('app-menu-open');
+  new MutationObserver(ensureAppMenuButton).observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  window.addEventListener('resize', function(){
+    if(window.innerWidth > MAX){
+      setPublicMenu(false);
+      closeAppMenu();
     }
   });
 })();
